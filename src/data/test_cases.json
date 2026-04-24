@@ -1,0 +1,126 @@
+{
+  "api_endpoint": "POST http://localhost:8000/api/v1/predict",
+  "content_type": "application/json",
+  "test_cases": [
+    {
+      "case_id": 1,
+      "description": "Trained male, moderate volume, upper body",
+      "expected_class": "Medium",
+      "expected_insight": "Borderline undertrained / optimal",
+      "note": "Profile phổ biến nhất trong data — trained male, ~18 sets/week, 1x/week frequency",
+      "request_body": {
+        "sets_week_all": 18.0,
+        "sets_week_direct": 4.0,
+        "frequency_direct": 1.0,
+        "sessions_per_week": 3.0,
+        "reps_week_all": 180.0,
+        "rep_range_all": 10.0,
+        "interset_rest_min_all": 1.25,
+        "percentage_failure_all": 22.5,
+        "weeks": 6.0,
+        "age": 22.4,
+        "failure_binary": 0,
+        "train_status_enc": 2,
+        "sex_male": 1.0,
+        "upper_body": 1,
+        "has_nutrition_control": 1
+      }
+    },
+    {
+      "case_id": 2,
+      "description": "High frequency, high volume trained — High responder",
+      "expected_class": "High",
+      "expected_insight": "Optimal or overtraining risk",
+      "note": "Frequency cao (4x), volume cao (32 sets), REST ngắn — pattern của High class",
+      "request_body": {
+        "sets_week_all": 32.0,
+        "sets_week_direct": 16.0,
+        "frequency_direct": 4.0,
+        "sessions_per_week": 8.0,
+        "reps_week_all": 288.0,
+        "rep_range_all": 9.0,
+        "interset_rest_min_all": 1.5,
+        "percentage_failure_all": 100.0,
+        "weeks": 8.0,
+        "age": 24.9,
+        "failure_binary": 1,
+        "train_status_enc": 2,
+        "sex_male": 1.0,
+        "upper_body": 1,
+        "has_nutrition_control": 0
+      }
+    },
+    {
+      "case_id": 3,
+      "description": "Untrained, very low volume — clearly undertraining",
+      "expected_class": "Low",
+      "expected_insight": "Undertraining",
+      "note": "Untrained (status=0), chỉ 3 sets/week — Low class, nên trigger warning undertraining",
+      "request_body": {
+        "sets_week_all": 3.0,
+        "sets_week_direct": 3.0,
+        "frequency_direct": 3.0,
+        "sessions_per_week": 3.0,
+        "reps_week_all": 36.3,
+        "rep_range_all": 12.1,
+        "interset_rest_min_all": 2.0,
+        "percentage_failure_all": 100.0,
+        "weeks": 14.0,
+        "age": 34.3,
+        "failure_binary": 1,
+        "train_status_enc": 0,
+        "sex_male": 0.5,
+        "upper_body": 0,
+        "has_nutrition_control": 0
+      }
+    },
+    {
+      "case_id": 4,
+      "description": "Long program, untrained, moderate volume — Medium",
+      "expected_class": "Medium",
+      "expected_insight": "Optimal or slight undertrain",
+      "note": "Chương trình dài (24 tuần), untrained ban đầu — hedges_g thực tế 0.79 (Medium)",
+      "request_body": {
+        "sets_week_all": 18.0,
+        "sets_week_direct": 9.0,
+        "frequency_direct": 3.0,
+        "sessions_per_week": 3.0,
+        "reps_week_all": 180.0,
+        "rep_range_all": 10.0,
+        "interset_rest_min_all": 1.75,
+        "percentage_failure_all": 100.0,
+        "weeks": 24.0,
+        "age": 24.1,
+        "failure_binary": 1,
+        "train_status_enc": 0,
+        "sex_male": 1.0,
+        "upper_body": 1,
+        "has_nutrition_control": 0
+      }
+    },
+    {
+      "case_id": 5,
+      "description": "Very high volume — potential overtraining + High class",
+      "expected_class": "High",
+      "expected_insight": "Overtraining risk OR optimal peak",
+      "note": "45 sets/week nằm ở edge của training data (max=48) — nên trigger GPR uncertainty cao. Rest dài (1.5 min) bù đắp cho volume lớn",
+      "request_body": {
+        "sets_week_all": 45.0,
+        "sets_week_direct": 45.0,
+        "frequency_direct": 3.0,
+        "sessions_per_week": 3.0,
+        "reps_week_all": 450.0,
+        "rep_range_all": 10.0,
+        "interset_rest_min_all": 1.5,
+        "percentage_failure_all": 100.0,
+        "weeks": 8.0,
+        "age": 23.8,
+        "failure_binary": 1,
+        "train_status_enc": 2,
+        "sex_male": 1.0,
+        "upper_body": 0,
+        "has_nutrition_control": 0
+      }
+    }
+  ]
+}

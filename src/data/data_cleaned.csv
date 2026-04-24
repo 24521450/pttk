@@ -1,0 +1,199 @@
+number,first.author,year,design,upper.lower,age,sex.male,train.status,body.mass,years.exp,sets.week.all,sets.week.direct,frequency.direct,sessions.per.week,reps.week.all,rep.range.all,interset.rest.min.all,percentage.failure.all,failure.nonfailure.mixed.direct,weeks,nutrition.controlled.surplus?,nutrition.controlled.deficit?,pre.mean,post.mean,pre.sd,post.sd,n,measure,outcome,hedges_g,volume_category,failure_binary,has_nutrition_control,train_status_enc,upper_body,hyp_class
+1,Amirthalingam,2016,between,upper,22.4,1.0,trained,74.8,4.8,18.0,4.0,1.0,3.0,180.0,10.0,1.25,22.5,mixed,6.0,Yes,No,41.1,43.4,6.6,7.5,9,Triceps MT,Hypertrophy,0.31,High,0,1,2,1,Medium
+1,Amirthalingam,2016,between,upper,22.4,1.0,trained,74.8,4.8,13.0,4.0,1.0,3.0,130.0,10.0,1.25,22.5,mixed,6.0,Yes,No,33.1,35.5,5.4,5.6,9,Biceps MT,Hypertrophy,0.42,Moderate,0,1,2,1,Medium
+1,Amirthalingam,2016,between,lower,22.4,1.0,trained,74.8,4.8,14.0,14.0,1.0,3.0,140.0,10.0,1.25,22.5,mixed,6.0,Yes,No,53.1,55.7,9.2,9.7,9,Anterior Thigh MT,Hypertrophy,0.26,Moderate,0,1,2,0,Medium
+1,Amirthalingam,2016,between,upper,21.8,1.0,trained,77.5,3.5,28.0,4.0,1.0,3.0,280.0,10.0,1.25,25.5,mixed,6.0,Yes,No,42.0,46.5,6.6,4.1,10,Triceps MT,Hypertrophy,0.78,High,0,1,2,1,Medium
+1,Amirthalingam,2016,between,upper,21.8,1.0,trained,77.5,3.5,18.0,4.0,1.0,3.0,180.0,10.0,1.25,25.5,mixed,6.0,Yes,No,34.6,34.9,4.1,2.2,10,Biceps MT,Hypertrophy,0.09,High,0,1,2,1,Low
+1,Amirthalingam,2016,between,lower,21.8,1.0,trained,77.5,3.5,24.0,24.0,1.0,3.0,240.0,10.0,1.25,25.5,mixed,6.0,Yes,No,53.3,54.4,7.8,7.2,10,Anterior Thigh MT,Hypertrophy,0.14,High,0,1,2,0,Low
+2,Longo,2022,between,lower,22.5,0.64,untrained,65.6,3.5,6.0,6.0,2.0,2.0,32.2,16.1,3.0,100.0,failure,10.0,No,No,76.7,86.53,14.2,15.41,14,Quad CSA,Hypertrophy,0.64,Low,1,0,0,0,Medium
+2,Longo,2022,between,lower,22.5,0.64,untrained,65.6,3.5,4.6,4.6,2.0,2.0,26.8,13.4,3.0,100.0,failure,10.0,No,No,75.8,80.65,12.9,13.18,14,Quad CSA,Hypertrophy,0.36,Low,1,0,0,0,Medium
+3,Longo,2022,between,lower,22.5,0.64,untrained,65.6,3.5,9.0,9.0,2.0,2.0,23.2,11.6,1.5,100.0,failure,10.0,No,No,76.5,86.02,14.7,15.33,14,Quad CSA,Hypertrophy,0.62,Moderate,1,0,0,0,Medium
+3,Longo,2022,between,lower,22.5,0.64,untrained,65.6,3.5,6.0,6.0,2.0,2.0,19.6,9.8,1.5,100.0,failure,10.0,No,No,77.2,82.37,13.3,13.34,14,Quad CSA,Hypertrophy,0.38,Low,1,0,0,0,Medium
+4,Tavares,2017,between,lower,22.7,1.0,trained,77.1,0.15,8.0,8.0,1.0,1.0,56.0,7.0,2.0,100.0,failure,8.0,No,No,9174.7,8965.0,969.6,970.6,11,Quad CSA,Hypertrophy,-0.21,Moderate,1,0,2,0,Low
+4,Tavares,2017,between,lower,23.1,1.0,trained,71.9,0.15,8.0,8.0,2.0,2.0,56.0,7.0,2.0,100.0,failure,8.0,No,No,8856.8,8736.7,966.8,931.0,11,Quad CSA,Hypertrophy,-0.12,Moderate,1,0,2,0,Low
+5,Starkey,1996,between,lower,34.3,0.5,untrained,71.1,3.5,3.0,3.0,3.0,3.0,36.3,12.1,2.0,100.0,failure,14.0,No,No,41.0,42.1,7.3,7.3,14,MED MT,Hypertrophy,0.15,Low,1,0,0,0,Low
+5,Starkey,1996,between,lower,34.3,0.5,untrained,71.1,3.5,3.0,3.0,3.0,3.0,36.3,12.1,2.0,100.0,failure,14.0,No,No,42.5,42.1,5.4,6.9,14,LATER MT,Hypertrophy,-0.06,Low,1,0,0,0,Low
+5,Starkey,1996,between,lower,34.3,0.5,untrained,71.1,3.5,3.0,3.0,3.0,3.0,36.3,12.1,2.0,100.0,failure,14.0,No,No,57.1,57.4,6.1,7.0,14,20% Anterior Thigh MT,Hypertrophy,0.04,Low,1,0,0,0,Low
+5,Starkey,1996,between,lower,34.3,0.5,untrained,71.1,3.5,3.0,3.0,3.0,3.0,36.3,12.1,2.0,100.0,failure,14.0,No,No,52.2,53.1,6.3,6.6,14,40% Anterior Thigh MT,Hypertrophy,0.14,Low,1,0,0,0,Low
+5,Starkey,1996,between,lower,34.3,0.5,untrained,71.1,3.5,3.0,3.0,3.0,3.0,36.3,12.1,2.0,100.0,failure,14.0,No,No,40.1,41.1,7.1,6.8,14,60% Anterior Thigh MT,Hypertrophy,0.14,Low,1,0,0,0,Low
+5,Starkey,1996,between,lower,34.3,0.5,untrained,71.1,3.5,3.0,3.0,3.0,3.0,36.3,12.1,2.0,100.0,failure,14.0,No,No,27.8,28.0,6.2,6.9,14,20% Lateral Thigh MT,Hypertrophy,0.03,Low,1,0,0,0,Low
+5,Starkey,1996,between,lower,34.3,0.5,untrained,71.1,3.5,3.0,3.0,3.0,3.0,36.3,12.1,2.0,100.0,failure,14.0,No,No,35.7,36.4,7.3,7.5,14,40% Lateral Thigh MT,Hypertrophy,0.09,Low,1,0,0,0,Low
+5,Starkey,1996,between,lower,34.3,0.5,untrained,71.1,3.5,3.0,3.0,3.0,3.0,36.3,12.1,2.0,100.0,failure,14.0,No,No,35.3,36.7,5.5,5.9,14,60% Lateral Thigh MT,Hypertrophy,0.24,Low,1,0,0,0,Medium
+5,Starkey,1996,between,lower,34.3,0.5,untrained,71.1,3.5,3.0,3.0,3.0,3.0,37.08,12.36,2.0,100.0,failure,14.0,No,No,60.9,64.3,11.1,10.7,14,40% Posterior Thigh MT,Hypertrophy,0.3,Low,1,0,0,0,Medium
+5,Starkey,1996,between,lower,34.3,0.5,untrained,71.1,3.5,3.0,3.0,3.0,3.0,37.08,12.36,2.0,100.0,failure,14.0,No,No,62.4,65.1,9.2,9.1,14,60% Posterior Thigh MT,Hypertrophy,0.29,Low,1,0,0,0,Medium
+5,Starkey,1996,between,lower,34.9,0.47,untrained,69.2,3.5,9.0,9.0,3.0,3.0,36.3,11.1,2.0,100.0,failure,14.0,No,No,38.8,39.8,7.2,6.5,17,MED MT,Hypertrophy,0.14,Moderate,1,0,0,0,Low
+5,Starkey,1996,between,lower,34.9,0.47,untrained,69.2,3.5,9.0,9.0,3.0,3.0,36.3,11.1,2.0,100.0,failure,14.0,No,No,41.1,40.6,5.9,6.0,17,LATER MT,Hypertrophy,-0.08,Moderate,1,0,0,0,Low
+5,Starkey,1996,between,lower,34.9,0.47,untrained,69.2,3.5,9.0,9.0,3.0,3.0,36.3,11.1,2.0,100.0,failure,14.0,No,No,55.0,56.1,7.4,7.6,17,20% Anterior Thigh MT,Hypertrophy,0.14,Moderate,1,0,0,0,Low
+5,Starkey,1996,between,lower,34.9,0.47,untrained,69.2,3.5,9.0,9.0,3.0,3.0,36.3,11.1,2.0,100.0,failure,14.0,No,No,49.3,50.3,8.0,7.3,17,40% Anterior Thigh MT,Hypertrophy,0.13,Moderate,1,0,0,0,Low
+5,Starkey,1996,between,lower,34.9,0.47,untrained,69.2,3.5,9.0,9.0,3.0,3.0,36.3,11.1,2.0,100.0,failure,14.0,No,No,38.0,39.1,7.5,7.3,17,60% Anterior Thigh MT,Hypertrophy,0.15,Moderate,1,0,0,0,Low
+5,Starkey,1996,between,lower,34.9,0.47,untrained,69.2,3.5,9.0,9.0,3.0,3.0,36.3,11.1,2.0,100.0,failure,14.0,No,No,26.8,28.3,4.1,5.5,17,20% Lateral Thigh MT,Hypertrophy,0.3,Moderate,1,0,0,0,Medium
+5,Starkey,1996,between,lower,34.9,0.47,untrained,69.2,3.5,9.0,9.0,3.0,3.0,36.3,11.1,2.0,100.0,failure,14.0,No,No,35.6,36.7,5.3,5.8,17,40% Lateral Thigh MT,Hypertrophy,0.19,Moderate,1,0,0,0,Low
+5,Starkey,1996,between,lower,34.9,0.47,untrained,69.2,3.5,9.0,9.0,3.0,3.0,36.3,11.1,2.0,100.0,failure,14.0,No,No,35.3,36.3,4.6,4.9,17,60% Lateral Thigh MT,Hypertrophy,0.21,Moderate,1,0,0,0,Medium
+5,Starkey,1996,between,lower,34.9,0.47,untrained,69.2,3.5,9.0,9.0,3.0,3.0,37.08,11.4,2.0,100.0,failure,14.0,No,No,56.1,59.1,7.0,7.8,17,40% Posterior Thigh MT,Hypertrophy,0.4,Moderate,1,0,0,0,Medium
+5,Starkey,1996,between,lower,34.9,0.47,untrained,69.2,3.5,9.0,9.0,3.0,3.0,37.08,11.4,2.0,100.0,failure,14.0,No,No,58.9,61.3,7.0,6.8,17,60% Posterior Thigh MT,Hypertrophy,0.34,Moderate,1,0,0,0,Medium
+5,Starkey,1996,between,lower,45.4,0.4,untrained,67.9,3.5,0.0,0.0,0.0,0.0,0.0,11.6,2.0,100.0,failure,14.0,No,No,37.9,36.6,5.9,7.8,8,MED MT,Hypertrophy,-0.18,Low,1,0,0,0,Low
+5,Starkey,1996,between,lower,45.4,0.4,untrained,67.9,3.5,0.0,0.0,0.0,0.0,0.0,11.6,2.0,100.0,failure,14.0,No,No,39.4,39.3,6.8,6.8,8,LATER MT,Hypertrophy,-0.01,Low,1,0,0,0,Low
+5,Starkey,1996,between,lower,45.4,0.4,untrained,67.9,3.5,0.0,0.0,0.0,0.0,0.0,11.6,2.0,100.0,failure,14.0,No,No,57.1,57.0,7.4,6.7,8,20% Anterior Thigh MT,Hypertrophy,-0.01,Low,1,0,0,0,Low
+5,Starkey,1996,between,lower,45.4,0.4,untrained,67.9,3.5,0.0,0.0,0.0,0.0,0.0,11.6,2.0,100.0,failure,14.0,No,No,49.3,48.5,8.7,8.6,8,40% Anterior Thigh MT,Hypertrophy,-0.09,Low,1,0,0,0,Low
+5,Starkey,1996,between,lower,45.4,0.4,untrained,67.9,3.5,0.0,0.0,0.0,0.0,0.0,11.6,2.0,100.0,failure,14.0,No,No,35.8,36.2,5.7,6.3,8,60% Anterior Thigh MT,Hypertrophy,0.06,Low,1,0,0,0,Low
+5,Starkey,1996,between,lower,45.4,0.4,untrained,67.9,3.5,0.0,0.0,0.0,0.0,0.0,11.6,2.0,100.0,failure,14.0,No,No,25.6,25.6,4.9,5.1,8,20% Lateral Thigh MT,Hypertrophy,0.0,Low,1,0,0,0,Low
+5,Starkey,1996,between,lower,45.4,0.4,untrained,67.9,3.5,0.0,0.0,0.0,0.0,0.0,11.6,2.0,100.0,failure,14.0,No,No,34.7,35.3,5.2,4.8,8,40% Lateral Thigh MT,Hypertrophy,0.11,Low,1,0,0,0,Low
+5,Starkey,1996,between,lower,45.4,0.4,untrained,67.9,3.5,0.0,0.0,0.0,0.0,0.0,11.6,2.0,100.0,failure,14.0,No,No,33.3,33.6,4.1,3.7,8,60% Lateral Thigh MT,Hypertrophy,0.07,Low,1,0,0,0,Low
+5,Starkey,1996,between,lower,45.4,0.4,untrained,67.9,3.5,0.0,0.0,0.0,0.0,0.0,11.88,2.0,100.0,failure,14.0,No,No,56.2,56.3,5.7,4.9,8,40% Posterior Thigh MT,Hypertrophy,0.02,Low,1,0,0,0,Low
+5,Starkey,1996,between,lower,45.4,0.4,untrained,67.9,3.5,0.0,0.0,0.0,0.0,0.0,11.88,2.0,100.0,failure,14.0,No,No,59.6,59.3,5.4,4.2,8,60% Posterior Thigh MT,Hypertrophy,-0.06,Low,1,0,0,0,Low
+9,Evangelista,2021,between,upper,26.2,1.0,untrained,69.9,3.5,32.0,16.0,2.0,4.0,320.0,10.0,1.0,100.0,failure,8.0,No,No,31.0,33.9,5.8,5.8,35,Biceps Brachii MT,Hypertrophy,0.49,High,1,0,0,1,Medium
+9,Evangelista,2021,between,upper,26.2,1.0,untrained,69.9,3.5,40.0,16.0,2.0,4.0,400.0,10.0,1.0,100.0,failure,8.0,No,No,22.1,26.3,6.5,7.2,35,Triceps Brachii MT,Hypertrophy,0.61,High,1,0,0,1,Medium
+9,Evangelista,2021,between,lower,26.2,1.0,untrained,69.9,3.5,16.0,16.0,2.0,4.0,160.0,10.0,1.0,100.0,failure,8.0,No,No,19.1,21.5,4.4,4.6,35,Vastus Lateralis MT,Hypertrophy,0.53,High,1,0,0,0,Medium
+9,Evangelista,2021,between,lower,26.2,1.0,untrained,69.9,3.5,16.0,0.0,0.0,4.0,160.0,10.0,1.0,100.0,failure,8.0,No,No,17.7,19.8,4.1,4.1,35,Rectus Femoris MT,Hypertrophy,0.51,High,1,0,0,0,Medium
+9,Evangelista,2021,between,upper,27.5,1.0,untrained,72.5,3.5,32.0,16.0,4.0,4.0,320.0,10.0,1.0,100.0,failure,8.0,No,No,31.6,35.1,7.0,6.9,32,Biceps Brachii MT,Hypertrophy,0.5,High,1,0,0,1,Medium
+9,Evangelista,2021,between,upper,27.5,1.0,untrained,72.5,3.5,48.0,16.0,4.0,4.0,480.0,10.0,1.0,100.0,failure,8.0,No,No,23.9,27.4,8.3,8.3,32,Triceps Brachii MT,Hypertrophy,0.42,High,1,0,0,1,Medium
+9,Evangelista,2021,between,lower,27.5,1.0,untrained,72.5,3.5,16.0,16.0,4.0,4.0,160.0,10.0,1.0,100.0,failure,8.0,No,No,20.1,22.5,3.6,4.0,32,Vastus Lateralis MT,Hypertrophy,0.62,High,1,0,0,0,Medium
+9,Evangelista,2021,between,lower,27.5,1.0,untrained,72.5,3.5,16.0,0.0,0.0,4.0,160.0,10.0,1.0,100.0,failure,8.0,No,No,17.9,20.1,3.7,3.7,32,Rectus Femoris MT,Hypertrophy,0.59,High,1,0,0,0,Medium
+12,Neves,2022,within,lower,26.0,1.0,trained,85.8,6.2,9.0,9.0,1.0,1.0,89.64,9.96,2.0,100.0,failure,9.0,No,No,100.4,101.8,16.4,16.4,12,Quad CSA,Hypertrophy,0.08,Moderate,1,0,2,0,Low
+12,Neves,2022,within,lower,26.0,1.0,trained,85.8,6.2,9.0,9.0,3.0,3.0,89.73,9.97,2.0,100.0,failure,9.0,No,No,100.9,104.8,18.7,17.9,12,Quad CSA,Hypertrophy,0.21,Moderate,1,0,2,0,Medium
+13,Correa,2022,between,upper,26.3,1.0,trained,79.7,3.07,32.0,16.0,2.0,4.0,288.0,9.0,1.5,100.0,failure,8.0,No,No,28.1,31.7,5.5,4.0,9,Biceps MT,Hypertrophy,0.71,High,1,0,2,1,Medium
+13,Correa,2022,between,upper,26.3,1.0,trained,79.7,3.07,32.0,16.0,2.0,4.0,288.0,9.0,1.5,100.0,failure,8.0,No,No,44.2,47.8,4.9,4.0,9,Triceps MT,Hypertrophy,0.77,High,1,0,2,1,Medium
+13,Correa,2022,between,lower,26.3,1.0,trained,79.7,3.07,32.0,32.0,2.0,4.0,288.0,9.0,1.5,100.0,failure,8.0,No,No,43.6,48.3,7.2,7.7,9,Vastus Lateralis MT,Hypertrophy,0.6,High,1,0,2,0,Medium
+13,Correa,2022,between,lower,26.3,1.0,trained,79.7,3.07,32.0,32.0,2.0,4.0,288.0,9.0,1.5,100.0,failure,8.0,No,No,43.7,47.2,7.7,7.6,9,Anterior Quad MT,Hypertrophy,0.44,High,1,0,2,0,Medium
+13,Correa,2022,between,upper,26.3,1.0,trained,79.7,3.07,32.0,32.0,2.0,4.0,288.0,9.0,1.5,100.0,failure,8.0,No,No,33.1,36.4,3.6,6.5,9,Pec MT,Hypertrophy,0.6,High,1,0,2,1,Medium
+13,Correa,2022,between,upper,24.9,1.0,trained,81.4,3.03,32.0,16.0,4.0,8.0,288.0,9.0,1.5,100.0,failure,8.0,No,No,28.6,32.5,3.4,4.2,9,Biceps MT,Hypertrophy,0.97,High,1,0,2,1,High
+13,Correa,2022,between,upper,24.9,1.0,trained,81.4,3.03,32.0,16.0,4.0,8.0,288.0,9.0,1.5,100.0,failure,8.0,No,No,44.0,46.3,6.8,9.2,9,Triceps MT,Hypertrophy,0.27,High,1,0,2,1,Medium
+13,Correa,2022,between,lower,24.9,1.0,trained,81.4,3.03,32.0,32.0,4.0,8.0,288.0,9.0,1.5,100.0,failure,8.0,No,No,43.5,47.8,4.2,5.6,9,Vastus Lateralis MT,Hypertrophy,0.83,High,1,0,2,0,High
+13,Correa,2022,between,lower,24.9,1.0,trained,81.4,3.03,32.0,32.0,4.0,8.0,288.0,9.0,1.5,100.0,failure,8.0,No,No,44.0,48.3,4.0,4.8,9,Anterior Quad MT,Hypertrophy,0.93,High,1,0,2,0,High
+13,Correa,2022,between,upper,24.9,1.0,trained,81.4,3.03,32.0,32.0,4.0,8.0,288.0,9.0,1.5,100.0,failure,8.0,No,No,36.4,38.6,7.5,7.7,9,Pec MT,Hypertrophy,0.28,High,1,0,2,1,Medium
+14,Zaroni,2019,between,upper,25.6,1.0,trained,83.4,6.4,30.0,15.0,5.0,5.0,330.0,11.0,1.0,100.0,failure,8.0,No,No,44.9,48.7,5.7,5.5,9,Biceps MT,Hypertrophy,0.65,High,1,0,2,1,Medium
+14,Zaroni,2019,between,upper,25.6,1.0,trained,83.4,6.4,30.0,15.0,5.0,5.0,330.0,11.0,1.0,100.0,failure,8.0,No,No,44.4,49.4,4.2,4.2,9,Triceps MT,Hypertrophy,1.13,High,1,0,2,1,High
+14,Zaroni,2019,between,lower,25.6,1.0,trained,83.4,6.4,12.0,12.0,4.0,5.0,132.0,11.0,1.0,100.0,failure,8.0,No,No,47.6,52.2,4.3,3.2,9,Vastus Lateralis MT,Hypertrophy,1.16,Moderate,1,0,2,0,High
+14,Zaroni,2019,between,upper,26.4,1.0,trained,84.4,6.6,30.0,15.0,1.0,5.0,330.0,11.0,1.0,100.0,failure,8.0,No,No,40.1,41.6,6.2,6.3,9,Biceps MT,Hypertrophy,0.23,High,1,0,2,1,Medium
+14,Zaroni,2019,between,upper,26.4,1.0,trained,84.4,6.6,30.0,15.0,1.0,5.0,330.0,11.0,1.0,100.0,failure,8.0,No,No,43.9,46.4,5.4,5.7,9,Triceps MT,Hypertrophy,0.43,High,1,0,2,1,Medium
+14,Zaroni,2019,between,lower,26.4,1.0,trained,84.4,6.6,12.0,12.0,1.0,5.0,132.0,11.0,1.0,100.0,failure,8.0,No,No,45.5,47.9,3.3,2.8,9,Vastus Lateralis MT,Hypertrophy,0.75,Moderate,1,0,2,0,Medium
+17,Gentil,2018,between,upper,21.7,1.0,trained,78.3,1.2,12.0,6.0,1.0,1.0,120.0,10.0,2.0,100.0,failure,10.0,No,No,37.0,38.1,4.9,5.1,8,Elbow Flexor MT,Hypertrophy,0.21,Moderate,1,0,2,1,Medium
+17,Gentil,2018,between,upper,22.8,1.0,trained,81.7,1.4,12.0,6.0,2.0,2.0,120.0,10.0,2.0,100.0,failure,10.0,No,No,35.7,36.1,4.3,4.1,8,Elbow Flexor MT,Hypertrophy,0.09,Moderate,1,0,2,1,Low
+18,Schoenfeld,2019,between,upper,23.8,1.0,trained,82.5,4.4,6.0,0.0,0.0,3.0,60.0,10.0,1.5,100.0,failure,8.0,No,No,42.6,43.3,4.3,5.1,11,Elbow Flexor MT,Hypertrophy,0.14,Low,1,0,2,1,Low
+18,Schoenfeld,2019,between,upper,23.8,1.0,trained,82.5,4.4,6.0,0.0,0.0,3.0,60.0,10.0,1.5,100.0,failure,8.0,No,No,47.2,47.7,4.5,4.6,11,Elbow Extensor MT,Hypertrophy,0.11,Low,1,0,2,1,Low
+18,Schoenfeld,2019,between,lower,23.8,1.0,trained,82.5,4.4,9.0,9.0,3.0,3.0,90.0,10.0,1.5,100.0,failure,8.0,No,No,59.7,61.7,6.7,5.5,11,Mid-Thigh MT,Hypertrophy,0.31,Moderate,1,0,2,0,Medium
+18,Schoenfeld,2019,between,lower,23.8,1.0,trained,82.5,4.4,9.0,9.0,3.0,3.0,90.0,10.0,1.5,100.0,failure,8.0,No,No,57.5,60.4,6.0,6.3,11,Lateral Thigh MT,Hypertrophy,0.45,Moderate,1,0,2,0,Medium
+18,Schoenfeld,2019,between,upper,23.8,1.0,trained,82.5,4.4,18.0,0.0,0.0,3.0,180.0,10.0,1.5,100.0,failure,8.0,No,No,44.6,46.7,5.9,5.8,12,Elbow Flexor MT,Hypertrophy,0.35,High,1,0,2,1,Medium
+18,Schoenfeld,2019,between,upper,23.8,1.0,trained,82.5,4.4,18.0,0.0,0.0,3.0,180.0,10.0,1.5,100.0,failure,8.0,No,No,48.4,49.8,6.2,6.3,12,Elbow Extensor MT,Hypertrophy,0.22,High,1,0,2,1,Medium
+18,Schoenfeld,2019,between,lower,23.8,1.0,trained,82.5,4.4,27.0,27.0,3.0,3.0,270.0,10.0,1.5,100.0,failure,8.0,No,No,57.9,61.0,8.1,8.7,12,Mid-Thigh MT,Hypertrophy,0.36,High,1,0,2,0,Medium
+18,Schoenfeld,2019,between,lower,23.8,1.0,trained,82.5,4.4,27.0,27.0,3.0,3.0,270.0,10.0,1.5,100.0,failure,8.0,No,No,57.9,62.5,8.0,7.0,12,Lateral Thigh MT,Hypertrophy,0.59,High,1,0,2,0,Medium
+18,Schoenfeld,2019,between,upper,23.8,1.0,trained,82.5,4.4,30.0,0.0,0.0,3.0,300.0,10.0,1.5,100.0,failure,8.0,No,No,41.9,44.8,3.6,4.1,11,Elbow Flexor MT,Hypertrophy,0.72,High,1,0,2,1,Medium
+18,Schoenfeld,2019,between,upper,23.8,1.0,trained,82.5,4.4,30.0,0.0,0.0,3.0,300.0,10.0,1.5,100.0,failure,8.0,No,No,47.1,49.7,3.5,4.9,11,Elbow Extensor MT,Hypertrophy,0.59,High,1,0,2,1,Medium
+18,Schoenfeld,2019,between,lower,23.8,1.0,trained,82.5,4.4,45.0,45.0,3.0,3.0,450.0,10.0,1.5,100.0,failure,8.0,No,No,54.4,61.2,3.4,4.5,11,Mid-Thigh MT,Hypertrophy,1.64,High,1,0,2,0,High
+18,Schoenfeld,2019,between,lower,23.8,1.0,trained,82.5,4.4,45.0,45.0,3.0,3.0,450.0,10.0,1.5,100.0,failure,8.0,No,No,52.4,59.6,6.2,5.8,11,Lateral Thigh MT,Hypertrophy,1.15,High,1,0,2,0,High
+23,Brigatto,2022,between,upper,27.9,1.0,trained,81.6,4.25,16.0,8.0,2.0,4.0,144.0,9.0,1.0,100.0,failure,8.0,No,No,38.2,38.4,3.9,3.9,9,Biceps Brachii MT,Hypertrophy,0.05,High,1,0,2,1,Low
+23,Brigatto,2022,between,upper,27.9,1.0,trained,81.6,4.25,16.0,8.0,2.0,4.0,144.0,9.0,1.0,100.0,failure,8.0,No,No,33.9,34.2,4.3,4.3,9,Triceps Brachii MT,Hypertrophy,0.07,High,1,0,2,1,Low
+23,Brigatto,2022,between,lower,27.9,1.0,trained,81.6,4.25,16.0,16.0,2.0,4.0,144.0,9.0,1.0,100.0,failure,8.0,No,No,36.2,36.9,4.4,4.0,9,Vastus Lateralis MT,Hypertrophy,0.16,High,1,0,2,0,Low
+23,Brigatto,2022,between,upper,26.4,1.0,trained,80.2,2.67,24.0,12.0,2.0,4.0,216.0,9.0,1.0,100.0,failure,8.0,No,No,38.2,38.7,4.5,4.6,9,Biceps Brachii MT,Hypertrophy,0.1,High,1,0,2,1,Low
+23,Brigatto,2022,between,upper,26.4,1.0,trained,80.2,2.67,24.0,12.0,2.0,4.0,216.0,9.0,1.0,100.0,failure,8.0,No,No,33.6,35.0,4.3,4.7,9,Triceps Brachii MT,Hypertrophy,0.3,High,1,0,2,1,Medium
+23,Brigatto,2022,between,lower,26.4,1.0,trained,80.2,2.67,24.0,24.0,2.0,4.0,216.0,9.0,1.0,100.0,failure,8.0,No,No,35.4,37.4,5.0,4.6,9,Vastus Lateralis MT,Hypertrophy,0.4,High,1,0,2,0,Medium
+23,Brigatto,2022,between,upper,27.1,1.0,trained,80.0,2.83,32.0,16.0,2.0,4.0,288.0,9.0,1.0,100.0,failure,8.0,No,No,35.6,36.7,3.1,3.0,9,Biceps Brachii MT,Hypertrophy,0.34,High,1,0,2,1,Medium
+23,Brigatto,2022,between,upper,27.1,1.0,trained,80.0,2.83,32.0,16.0,2.0,4.0,288.0,9.0,1.0,100.0,failure,8.0,No,No,35.9,38.4,3.8,4.2,9,Triceps Brachii MT,Hypertrophy,0.59,High,1,0,2,1,Medium
+23,Brigatto,2022,between,lower,27.1,1.0,trained,80.0,2.83,32.0,32.0,2.0,4.0,288.0,9.0,1.0,100.0,failure,8.0,No,No,37.1,40.6,5.1,5.1,9,Vastus Lateralis MT,Hypertrophy,0.65,High,1,0,2,0,Medium
+25,Hamarsland,2022,between,lower,25.5,0.62,trained,74.6,3.5,12.0,12.0,2.0,2.0,108.0,9.0,4.0,100.0,failure,9.0,No,No,2.6,3.1,0.4,0.4,13,Vastus Lateralis MT,Hypertrophy,1.21,Moderate,1,0,2,0,High
+25,Hamarsland,2022,between,lower,26.8,0.38,trained,80.7,3.6,12.0,12.0,4.0,4.0,108.0,9.0,4.0,100.0,failure,9.0,No,No,2.4,2.9,0.5,0.4,8,Vastus Lateralis MT,Hypertrophy,1.04,Moderate,1,0,2,0,High
+26,Radaelli,2015,between,upper,24.1,1.0,untrained,79.7,3.5,6.0,3.0,3.0,3.0,60.0,10.0,1.75,100.0,failure,24.33,No,No,3.67,3.71,0.52,0.39,12,Elbow Flexors MT,Hypertrophy,0.08,Low,1,0,0,1,Low
+26,Radaelli,2015,between,upper,24.1,1.0,untrained,79.7,3.5,9.0,3.0,3.0,3.0,90.0,10.0,1.75,100.0,failure,24.33,No,No,3.94,3.96,0.39,0.39,12,Elbow Extensors MT,Hypertrophy,0.05,Moderate,1,0,0,1,Low
+26,Radaelli,2015,between,upper,24.1,1.0,untrained,76.2,3.5,18.0,9.0,3.0,3.0,180.0,10.0,1.75,100.0,failure,24.33,No,No,3.55,3.83,0.36,0.33,13,Elbow Flexors MT,Hypertrophy,0.79,High,1,0,0,1,Medium
+26,Radaelli,2015,between,upper,24.1,1.0,untrained,76.2,3.5,27.0,9.0,3.0,3.0,270.0,10.0,1.75,100.0,failure,24.33,No,No,4.0,4.04,0.65,0.51,13,Elbow Extensors MT,Hypertrophy,0.07,High,1,0,0,1,Low
+26,Radaelli,2015,between,upper,24.7,1.0,untrained,82.2,3.5,30.0,15.0,3.0,3.0,300.0,10.0,1.75,100.0,failure,24.33,No,No,3.56,4.18,0.52,0.51,13,Elbow Flexors MT,Hypertrophy,1.17,High,1,0,0,1,High
+26,Radaelli,2015,between,upper,24.7,1.0,untrained,82.2,3.5,45.0,15.0,3.0,3.0,450.0,10.0,1.75,100.0,failure,24.33,No,No,4.02,4.86,0.35,0.37,13,Elbow Extensors MT,Hypertrophy,2.26,High,1,0,0,1,High
+29,Lasevicius,2019,between,lower,21.0,1.0,trained,78.7,3.2,36.0,12.0,2.0,4.0,360.0,10.0,1.5,100.0,failure,10.0,No,No,22.7,25.5,2.6,2.2,14,Rectus Femoris MT,Hypertrophy,1.13,High,1,0,2,0,High
+29,Lasevicius,2019,between,lower,21.0,1.0,trained,78.7,3.2,36.0,36.0,2.0,4.0,360.0,10.0,1.5,100.0,failure,10.0,No,No,21.3,24.9,2.9,3.1,14,Vastus Lateralis MT,Hypertrophy,1.16,High,1,0,2,0,High
+29,Lasevicius,2019,between,upper,21.0,1.0,trained,78.7,3.2,24.0,12.0,2.0,4.0,240.0,10.0,1.5,100.0,failure,10.0,No,No,34.3,36.8,5.3,4.7,14,Elbow Flexors MT,Hypertrophy,0.48,High,1,0,2,1,Medium
+29,Lasevicius,2019,between,upper,21.0,1.0,trained,78.7,3.2,24.0,12.0,2.0,4.0,240.0,10.0,1.5,100.0,failure,10.0,No,No,29.9,34.6,6.5,5.8,14,Elbow Extensors MT,Hypertrophy,0.74,High,1,0,2,1,Medium
+29,Lasevicius,2019,between,lower,21.0,1.0,trained,78.7,3.2,36.0,12.0,3.0,3.0,360.0,10.0,1.5,100.0,failure,10.0,No,No,22.7,24.5,2.5,2.7,14,Rectus Femoris MT,Hypertrophy,0.67,High,1,0,2,0,Medium
+29,Lasevicius,2019,between,lower,21.0,1.0,trained,78.7,3.2,36.0,36.0,3.0,3.0,360.0,10.0,1.5,100.0,failure,10.0,No,No,21.2,23.8,3.4,3.9,14,Vastus Lateralis MT,Hypertrophy,0.69,High,1,0,2,0,Medium
+29,Lasevicius,2019,between,upper,21.0,1.0,trained,78.7,3.2,24.0,12.0,3.0,3.0,240.0,10.0,1.5,100.0,failure,10.0,No,No,35.9,36.5,5.3,6.0,14,Elbow Flexors MT,Hypertrophy,0.1,High,1,0,2,1,Low
+29,Lasevicius,2019,between,upper,21.0,1.0,trained,78.7,3.2,24.0,12.0,3.0,3.0,240.0,10.0,1.5,100.0,failure,10.0,No,No,30.0,32.6,5.6,8.1,14,Elbow Extensors MT,Hypertrophy,0.36,High,1,0,2,1,Medium
+30,Brigatto,2019,between,upper,28.6,1.0,trained,80.7,5.2,16.0,8.0,1.0,2.0,160.0,10.0,1.0,100.0,failure,8.0,No,No,43.1,45.6,4.6,4.5,10,Triceps Brachii MT,Hypertrophy,0.53,High,1,0,2,1,Medium
+30,Brigatto,2019,between,upper,28.6,1.0,trained,80.7,5.2,16.0,8.0,1.0,2.0,160.0,10.0,1.0,100.0,failure,8.0,No,No,46.2,49.2,6.5,6.1,10,Elbow Flexor MT,Hypertrophy,0.46,High,1,0,2,1,Medium
+30,Brigatto,2019,between,lower,28.6,1.0,trained,80.7,5.2,16.0,16.0,1.0,2.0,160.0,10.0,1.0,100.0,failure,8.0,No,No,46.1,50.8,4.8,4.5,10,Vastus Lateralis MT,Hypertrophy,0.97,High,1,0,2,0,High
+30,Brigatto,2019,between,lower,28.6,1.0,trained,80.7,5.2,16.0,16.0,1.0,2.0,160.0,10.0,1.0,100.0,failure,8.0,No,No,41.3,45.5,3.9,4.4,10,Anterior Quad MT,Hypertrophy,0.97,High,1,0,2,0,High
+30,Brigatto,2019,between,upper,25.5,1.0,trained,75.2,4.9,16.0,8.0,2.0,4.0,160.0,10.0,1.0,100.0,failure,8.0,No,No,41.5,44.0,4.9,4.8,10,Triceps Brachii MT,Hypertrophy,0.49,High,1,0,2,1,Medium
+30,Brigatto,2019,between,upper,25.5,1.0,trained,75.2,4.9,16.0,8.0,2.0,4.0,160.0,10.0,1.0,100.0,failure,8.0,No,No,47.7,50.6,7.8,7.5,10,Elbow Flexor MT,Hypertrophy,0.36,High,1,0,2,1,Medium
+30,Brigatto,2019,between,lower,25.5,1.0,trained,75.2,4.9,16.0,16.0,2.0,4.0,160.0,10.0,1.0,100.0,failure,8.0,No,No,46.3,51.2,5.5,4.9,10,Vastus Lateralis MT,Hypertrophy,0.9,High,1,0,2,0,High
+30,Brigatto,2019,between,lower,25.5,1.0,trained,75.2,4.9,16.0,16.0,2.0,4.0,160.0,10.0,1.0,100.0,failure,8.0,No,No,39.2,44.0,3.5,3.7,10,Anterior Quad MT,Hypertrophy,1.28,High,1,0,2,0,High
+32,Schoenfeld,2015,between,upper,23.5,1.0,trained,78.0,4.5,15.0,6.0,1.0,3.0,150.0,10.0,1.5,100.0,failure,8.0,No,No,47.4,49.5,6.3,5.7,9,Elbow Flexors MT,Hypertrophy,0.33,Moderate,1,0,2,1,Medium
+32,Schoenfeld,2015,between,upper,23.5,1.0,trained,78.0,4.5,19.0,6.0,1.0,3.0,190.0,10.0,1.5,100.0,failure,8.0,No,No,45.5,47.9,5.2,4.6,9,Elbow Extensors MT,Hypertrophy,0.47,High,1,0,2,1,Medium
+32,Schoenfeld,2015,between,lower,23.5,1.0,trained,78.0,4.5,9.0,9.0,1.0,3.0,90.0,10.0,1.5,100.0,failure,8.0,No,No,57.4,58.6,6.4,6.7,9,Vastus Lateralis MT,Hypertrophy,0.17,Moderate,1,0,2,0,Low
+32,Schoenfeld,2015,between,upper,23.5,1.0,trained,78.0,4.5,15.0,6.0,3.0,3.0,150.0,10.0,1.5,100.0,failure,8.0,No,No,49.5,52.8,9.2,8.3,10,Elbow Flexors MT,Hypertrophy,0.36,Moderate,1,0,2,1,Medium
+32,Schoenfeld,2015,between,upper,23.5,1.0,trained,78.0,4.5,19.0,6.0,3.0,3.0,190.0,10.0,1.5,100.0,failure,8.0,No,No,44.8,48.5,4.5,3.4,10,Elbow Extensors MT,Hypertrophy,0.89,High,1,0,2,1,High
+32,Schoenfeld,2015,between,lower,23.5,1.0,trained,78.0,4.5,9.0,9.0,3.0,3.0,90.0,10.0,1.5,100.0,failure,8.0,No,No,53.7,57.3,5.6,4.5,10,Vastus Lateralis MT,Hypertrophy,0.68,Moderate,1,0,2,0,Medium
+34,Gentil,2015,between,upper,23.1,1.0,untrained,73.1,3.5,12.0,6.0,1.0,1.0,120.0,10.0,2.0,100.0,failure,10.0,No,No,31.7,33.43,3.31,3.46,15,Elbow Flexor MT,Hypertrophy,0.5,Moderate,1,0,0,1,Medium
+34,Gentil,2015,between,upper,22.8,1.0,untrained,72.7,3.5,12.0,6.0,2.0,2.0,120.0,10.0,2.0,100.0,failure,10.0,No,No,32.78,35.09,4.03,3.55,15,Elbow Flexor MT,Hypertrophy,0.59,Moderate,1,0,0,1,Medium
+36,Heaselgrave,2019,between,upper,20.1,1.0,trained,81.3,3.5,9.0,3.0,1.0,1.0,99.0,11.0,3.0,0.0,nonfailure,6.0,No,No,3.71,3.85,0.44,0.45,17,Biceps MT,Hypertrophy,0.31,Moderate,0,0,2,1,Medium
+36,Heaselgrave,2019,between,upper,19.5,1.0,trained,76.3,3.5,18.0,6.0,2.0,2.0,198.0,11.0,3.0,0.0,nonfailure,6.0,No,No,3.62,3.9,0.51,0.43,15,Biceps MT,Hypertrophy,0.58,High,0,0,2,1,Medium
+36,Heaselgrave,2019,between,upper,20.5,1.0,trained,82.0,3.5,27.0,9.0,2.0,2.0,297.0,11.0,3.0,0.0,nonfailure,6.0,No,No,3.72,3.92,0.53,0.49,17,Biceps MT,Hypertrophy,0.38,High,0,0,2,1,Medium
+38,Barcelos,2018,mixed,lower,23.0,1.0,untrained,72.3,3.5,15.0,15.0,5.0,5.0,157.5,10.5,2.0,100.0,failure,8.0,No,No,22.5,25.3,3.8,4.3,19,Vastus Lateralis CSA,Hypertrophy,0.68,Moderate,1,0,0,0,Medium
+38,Barcelos,2018,mixed,lower,23.0,1.0,untrained,72.3,3.5,9.0,9.0,3.0,3.0,94.5,10.5,2.0,100.0,failure,8.0,No,No,21.2,23.6,4.0,4.2,10,Vastus Lateralis CSA,Hypertrophy,0.56,Moderate,1,0,0,0,Medium
+38,Barcelos,2018,mixed,lower,23.0,1.0,untrained,72.3,3.5,6.0,6.0,2.0,2.0,63.0,10.5,2.0,100.0,failure,8.0,No,No,22.9,25.5,3.8,3.7,9,Vastus Lateralis CSA,Hypertrophy,0.66,Low,1,0,0,0,Medium
+39,Saric,2019,between,upper,22.6,1.0,trained,87.2,3.5,24.0,12.0,3.0,3.0,216.0,9.0,1.25,100.0,failure,6.0,No,No,38.2,40.9,3.8,4.3,14,Elbow Flexor MT,Hypertrophy,0.65,High,1,0,2,1,Medium
+39,Saric,2019,between,upper,22.6,1.0,trained,87.2,3.5,16.0,12.0,3.0,3.0,144.0,9.0,1.25,100.0,failure,6.0,No,No,39.5,45.1,7.4,4.9,14,Elbow Extensor MT,Hypertrophy,0.87,High,1,0,2,1,High
+39,Saric,2019,between,lower,22.6,1.0,trained,87.2,3.5,12.0,4.0,1.0,3.0,108.0,9.0,1.25,100.0,failure,6.0,No,No,25.6,26.8,4.7,4.6,14,Rectus Femoris MT,Hypertrophy,0.25,Moderate,1,0,2,0,Medium
+39,Saric,2019,between,lower,22.6,1.0,trained,87.2,3.5,12.0,12.0,3.0,3.0,108.0,9.0,1.25,100.0,failure,6.0,No,No,21.0,23.1,4.1,3.1,14,Vastus Intermedius MT,Hypertrophy,0.56,Moderate,1,0,2,0,Medium
+39,Saric,2019,between,upper,22.6,1.0,trained,87.2,3.5,24.0,12.0,6.0,6.0,216.0,9.0,1.25,100.0,failure,6.0,No,No,41.3,40.9,3.9,3.3,13,Elbow Flexor MT,Hypertrophy,-0.11,High,1,0,2,1,Low
+39,Saric,2019,between,upper,22.6,1.0,trained,87.2,3.5,16.0,12.0,6.0,6.0,144.0,9.0,1.25,100.0,failure,6.0,No,No,42.1,46.9,6.1,5.0,13,Elbow Extensor MT,Hypertrophy,0.83,High,1,0,2,1,High
+39,Saric,2019,between,lower,22.6,1.0,trained,87.2,3.5,12.0,4.0,2.0,6.0,108.0,9.0,1.25,100.0,failure,6.0,No,No,23.9,25.3,2.6,2.7,13,Rectus Femoris MT,Hypertrophy,0.51,Moderate,1,0,2,0,Medium
+39,Saric,2019,between,lower,22.6,1.0,trained,87.2,3.5,12.0,12.0,6.0,6.0,108.0,9.0,1.25,100.0,failure,6.0,No,No,21.6,23.9,3.5,3.8,13,Vastus Intermedius MT,Hypertrophy,0.61,Moderate,1,0,2,0,Medium
+41,Aube,2022,between,lower,21.5,1.0,trained,79.3,3.5,12.0,12.0,2.0,2.0,123.0,10.25,2.0,33.33,mixed,8.0,No,No,5.86,6.25,1.08,1.07,13,Middle Anterior Thigh MT (VI+RF),Hypertrophy,0.35,Moderate,0,0,2,0,Medium
+41,Aube,2022,between,lower,21.5,1.0,trained,79.3,3.5,12.0,12.0,2.0,2.0,123.0,10.25,2.0,33.33,mixed,8.0,No,No,3.48,3.82,0.91,1.02,13,Distal Anterior Thight MT (VI+RF),Hypertrophy,0.34,Moderate,0,0,2,0,Medium
+41,Aube,2022,between,lower,20.7,1.0,trained,77.0,3.5,18.0,18.0,2.0,2.0,184.5,10.25,2.0,22.22,mixed,8.0,No,No,5.75,6.07,0.94,0.74,12,Middle Anterior Thigh MT (VI+RF),Hypertrophy,0.37,High,0,0,2,0,Medium
+41,Aube,2022,between,lower,20.7,1.0,trained,77.0,3.5,18.0,18.0,2.0,2.0,184.5,10.25,2.0,22.22,mixed,8.0,No,No,3.14,3.42,0.98,0.95,12,Distal Anterior Thight MT (VI+RF),Hypertrophy,0.28,High,0,0,2,0,Medium
+41,Aube,2022,between,lower,23.5,1.0,trained,79.8,3.5,24.0,24.0,2.0,2.0,246.0,10.25,2.0,16.67,mixed,8.0,No,No,5.93,6.08,0.73,0.79,10,Middle Anterior Thigh MT (VI+RF),Hypertrophy,0.19,High,0,0,2,0,Low
+41,Aube,2022,between,lower,23.5,1.0,trained,79.8,3.5,24.0,24.0,2.0,2.0,246.0,10.25,2.0,16.67,mixed,8.0,No,No,3.06,3.45,0.72,0.46,10,Distal Anterior Thight MT (VI+RF),Hypertrophy,0.62,High,0,0,2,0,Medium
+42,Yue,2018,between,lower,21.0,1.0,trained,76.63,3.0,4.0,4.0,2.0,4.0,40.0,10.0,2.0,100.0,failure,6.0,No,No,41.1,42.9,13.0,13.65,9,Vastus Medialis Muscle Thickness,Hypertrophy,0.13,Low,1,0,2,0,Low
+42,Yue,2018,between,upper,21.0,1.0,trained,76.63,3.0,16.0,8.0,2.0,4.0,160.0,10.0,2.0,100.0,failure,6.0,No,No,40.5,41.9,9.59,10.58,9,Elbow Flexor Muscle Thickness,Hypertrophy,0.13,High,1,0,2,1,Low
+42,Yue,2018,between,upper,21.0,1.0,trained,76.63,3.0,20.0,8.0,2.0,4.0,200.0,10.0,2.0,100.0,failure,6.0,No,No,25.6,26.7,7.48,7.7,9,Anterior Deltoid Muscle Thickness,Hypertrophy,0.14,High,1,0,2,1,Low
+42,Yue,2018,between,lower,28.0,1.0,trained,79.38,2.9,4.0,4.0,1.0,2.0,40.0,10.0,2.0,100.0,failure,6.0,No,No,35.9,38.1,12.48,13.37,9,Vastus Medialis Muscle Thickness,Hypertrophy,0.16,Low,1,0,2,0,Low
+42,Yue,2018,between,upper,28.0,1.0,trained,79.38,2.9,16.0,8.0,1.0,2.0,160.0,10.0,2.0,100.0,failure,6.0,No,No,38.8,41.0,7.41,9.62,9,Elbow Flexor Muscle Thickness,Hypertrophy,0.24,High,1,0,2,1,Medium
+42,Yue,2018,between,upper,28.0,1.0,trained,79.38,2.9,20.0,8.0,1.0,2.0,200.0,10.0,2.0,100.0,failure,6.0,No,No,20.9,22.0,5.64,5.99,9,Anterior Deltoid Muscle Thickness,Hypertrophy,0.18,High,1,0,2,1,Low
+45,Sooneste,2013,within,upper,25.0,1.0,untrained,64.2,3.5,2.0,2.0,2.0,2.0,19.2,9.6,2.0,0.0,mixed,12.0,No,No,1596.6,1677.4,251.4,241.3,7,Elbow Flexor (Biceps Brachii + Brachialis) CSA,Hypertrophy,0.31,Low,0,0,0,1,Medium
+45,Sooneste,2013,within,upper,25.0,1.0,untrained,64.2,3.5,6.0,6.0,2.0,2.0,52.2,8.7,2.0,0.0,mixed,12.0,No,No,1640.6,1902.3,303.1,403.6,7,Elbow Flexor (Biceps Brachii + Brachialis) CSA,Hypertrophy,0.69,Low,0,0,0,1,Medium
+48,Bottaro,2011,between,upper,22.2,1.0,untrained,72.7,3.5,2.0,2.0,2.0,2.0,20.0,10.0,2.33,100.0,failure,12.0,No,No,27.9,29.9,4.2,3.3,11,Biceps Brachii MT,Hypertrophy,0.51,Low,1,0,0,1,Medium
+48,Bottaro,2011,between,lower,22.2,1.0,untrained,72.7,3.5,6.0,6.0,2.0,2.0,60.0,10.0,2.33,100.0,failure,12.0,No,No,20.3,20.8,3.7,4.1,11,Rectus Femoris MT,Hypertrophy,0.12,Low,1,0,0,0,Low
+48,Bottaro,2011,between,upper,23.4,1.0,untrained,73.1,3.5,6.0,6.0,2.0,2.0,60.0,10.0,2.33,100.0,failure,12.0,No,No,28.8,30.5,2.8,4.7,13,Biceps Brachii MT,Hypertrophy,0.43,Low,1,0,0,1,Medium
+48,Bottaro,2011,between,lower,23.4,1.0,untrained,73.1,3.5,2.0,2.0,2.0,2.0,20.0,10.0,2.33,100.0,failure,12.0,No,No,23.9,23.2,3.6,3.5,13,Rectus Femoris MT,Hypertrophy,-0.19,Low,1,0,0,0,Low
+52,Ostrowski,1997,between,lower,23.2,1.0,trained,79.1,2.8,3.0,1.0,1.0,4.0,28.8,9.6,3.0,100.0,failure,10.0,No,No,930.0,993.0,213.0,247.0,9,Rectus Femoris CSA (Ultrasound),Hypertrophy,0.26,Low,1,0,2,0,Medium
+52,Ostrowski,1997,between,lower,23.2,1.0,trained,79.1,2.8,3.0,1.0,1.0,4.0,28.8,9.6,3.0,100.0,failure,10.0,No,No,132.0,136.0,15.0,16.0,9,Rectus Femoris Circumference (Ultrasound),Hypertrophy,0.25,Low,1,0,2,0,Medium
+52,Ostrowski,1997,between,upper,23.2,1.0,trained,79.1,2.8,7.0,3.0,1.0,4.0,67.2,9.6,3.0,100.0,failure,10.0,No,No,44.0,45.0,4.0,3.0,9,Triceps MT,Hypertrophy,0.27,Moderate,1,0,2,1,Medium
+52,Ostrowski,1997,between,lower,23.7,1.0,trained,79.7,3.1,6.0,2.0,1.0,4.0,57.6,9.6,3.0,100.0,failure,10.0,No,No,940.0,987.0,163.0,239.0,9,Rectus Femoris CSA (Ultrasound),Hypertrophy,0.22,Low,1,0,2,0,Medium
+52,Ostrowski,1997,between,lower,23.7,1.0,trained,79.7,3.1,6.0,2.0,1.0,4.0,57.6,9.6,3.0,100.0,failure,10.0,No,No,133.0,135.0,14.0,17.0,9,Rectus Femoris Circumference (Ultrasound),Hypertrophy,0.12,Low,1,0,2,0,Low
+52,Ostrowski,1997,between,upper,23.7,1.0,trained,79.7,3.1,14.0,6.0,1.0,4.0,134.4,9.6,3.0,100.0,failure,10.0,No,No,43.0,45.0,5.0,4.0,9,Triceps MT,Hypertrophy,0.42,Moderate,1,0,2,1,Medium
+52,Ostrowski,1997,between,lower,22.9,1.0,trained,73.0,2.7,12.0,4.0,1.0,4.0,115.2,9.6,3.0,100.0,failure,10.0,No,No,860.0,973.0,144.0,197.0,9,Rectus Femoris CSA (Ultrasound),Hypertrophy,0.62,Moderate,1,0,2,0,Medium
+52,Ostrowski,1997,between,lower,22.9,1.0,trained,73.0,2.7,12.0,4.0,1.0,4.0,115.2,9.6,3.0,100.0,failure,10.0,No,No,126.0,134.0,11.0,15.0,9,Rectus Femoris Circumference (Ultrasound),Hypertrophy,0.58,Moderate,1,0,2,0,Medium
+52,Ostrowski,1997,between,upper,22.9,1.0,trained,73.0,2.7,28.0,12.0,1.0,4.0,268.8,9.6,3.0,100.0,failure,10.0,No,No,42.0,44.0,4.0,3.0,9,Triceps MT,Hypertrophy,0.54,High,1,0,2,1,Medium
+54,Ochi,2018,between,lower,22.3,1.0,untrained,66.8,3.5,6.0,6.0,1.0,1.0,72.0,12.0,2.0,0.0,nonfailure,11.0,No,No,2.27,2.57,0.24,0.2,10,Vastus Lateralis MT,Hypertrophy,1.3,Low,0,0,0,0,High
+54,Ochi,2018,between,lower,22.3,1.0,untrained,66.8,3.5,6.0,6.0,1.0,1.0,72.0,12.0,2.0,0.0,nonfailure,11.0,No,No,2.39,2.76,0.24,0.26,10,Rectus Femoris MT,Hypertrophy,1.42,Low,0,0,0,0,High
+54,Ochi,2018,between,lower,22.3,1.0,untrained,66.8,3.5,6.0,6.0,1.0,1.0,72.0,12.0,2.0,0.0,nonfailure,11.0,No,No,4.59,5.08,0.49,0.44,10,Vastus Medialis MT,Hypertrophy,1.01,Low,0,0,0,0,High
+54,Ochi,2018,between,lower,22.3,1.0,untrained,66.8,3.5,6.0,6.0,1.0,1.0,72.0,12.0,2.0,0.0,nonfailure,11.0,No,No,2.53,2.82,0.33,0.36,10,Vastus Intermedius MT,Hypertrophy,0.8,Low,0,0,0,0,High
+54,Ochi,2018,between,lower,22.3,1.0,untrained,66.8,3.5,6.0,6.0,3.0,3.0,72.0,12.0,2.0,0.0,nonfailure,11.0,No,No,2.28,2.58,0.38,0.39,10,Vastus Lateralis MT,Hypertrophy,0.75,Low,0,0,0,0,Medium
+54,Ochi,2018,between,lower,22.3,1.0,untrained,66.8,3.5,6.0,6.0,3.0,3.0,72.0,12.0,2.0,0.0,nonfailure,11.0,No,No,2.32,2.71,0.25,0.26,10,Rectus Femoris MT,Hypertrophy,1.46,Low,0,0,0,0,High
+54,Ochi,2018,between,lower,22.3,1.0,untrained,66.8,3.5,6.0,6.0,3.0,3.0,72.0,12.0,2.0,0.0,nonfailure,11.0,No,No,4.83,5.3,0.71,0.76,10,Vastus Medialis MT,Hypertrophy,0.61,Low,0,0,0,0,Medium
+54,Ochi,2018,between,lower,22.3,1.0,untrained,66.8,3.5,6.0,6.0,3.0,3.0,72.0,12.0,2.0,0.0,nonfailure,11.0,No,No,2.72,3.04,0.61,0.7,10,Vastus Intermedius MT,Hypertrophy,0.47,Low,0,0,0,0,Medium
+59,Roth,2023,between,lower,27.42,1.0,trained,85.17,6.63,12.0,6.0,2.0,4.0,120.0,10.0,4.09,0.0,nonfailure,6.0,No,Yes,28.26,28.25,3.13,2.89,19,Rectus Femoris (50% length) Muscle Thickness,Hypertrophy,-0.0,Moderate,0,1,2,0,Low
+59,Roth,2023,between,lower,27.42,1.0,trained,85.17,6.63,12.0,6.0,2.0,4.0,120.0,10.0,4.09,0.0,nonfailure,6.0,No,Yes,8.72,8.8,2.13,2.26,19,Rectus Femoris (75% length) Muscle Thickness,Hypertrophy,0.04,Moderate,0,1,2,0,Low
+59,Roth,2023,between,lower,25.58,1.0,trained,85.96,5.08,20.0,10.0,2.0,4.0,200.0,10.0,4.11,0.0,nonfailure,6.0,No,Yes,27.48,27.84,3.01,3.06,19,Rectus Femoris (50% length) Muscle Thickness,Hypertrophy,0.12,High,0,1,2,0,Low
+59,Roth,2023,between,lower,25.58,1.0,trained,85.96,5.08,20.0,10.0,2.0,4.0,200.0,10.0,4.11,0.0,nonfailure,6.0,No,Yes,9.09,8.77,3.26,3.44,19,Rectus Femoris (75% length) Muscle Thickness,Hypertrophy,-0.09,High,0,1,2,0,Low
+65,Hammarström,2020,within,lower,22.8,0.47,untrained,69.76,3.5,5.17,5.17,2.58,2.58,39.83,7.71,2.25,80.64,mixed,12.0,No,No,59.88,62.0,11.12,11.43,34,Knee-extensor CSA (MRI),Hypertrophy,0.19,Low,0,0,0,0,Low
+65,Hammarström,2020,within,lower,22.8,0.47,untrained,69.76,3.5,15.5,15.5,2.58,2.58,119.5,7.71,2.25,80.64,mixed,12.0,No,No,60.33,63.35,11.73,11.94,34,Knee-extensor CSA (MRI),Hypertrophy,0.25,High,0,0,0,0,Medium
+66,Enes,2023,between,lower,24.2,1.0,trained,82.9,5.4,21.14,21.14,2.0,2.0,190.27,9.0,2.0,33.33,mixed,14.0,No,No,44.67,46.36,9.15,8.81,10,Vastus Lateralis Cross-Sectional Area (Ultrasound),Hypertrophy,0.18,High,0,0,2,0,Low
+66,Enes,2023,between,lower,24.2,1.0,trained,82.9,5.4,21.14,21.14,2.0,2.0,190.27,9.0,2.0,33.33,mixed,14.0,No,No,14.18,14.54,1.94,1.74,10,Sum of Lateral Thigh MT,Hypertrophy,0.19,High,0,0,2,0,Low
+66,Enes,2023,between,lower,25.1,1.0,trained,78.1,4.5,29.71,29.71,2.0,2.0,267.42,9.0,2.0,33.33,mixed,14.0,No,No,41.15,44.98,10.12,10.27,10,Vastus Lateralis Cross-Sectional Area (Ultrasound),Hypertrophy,0.36,High,0,0,2,0,Medium
+66,Enes,2023,between,lower,25.1,1.0,trained,78.1,4.5,29.71,29.71,2.0,2.0,267.42,9.0,2.0,33.33,mixed,14.0,No,No,13.64,14.36,2.03,2.19,10,Sum of Lateral Thigh MT,Hypertrophy,0.33,High,0,0,2,0,Medium
+66,Enes,2023,between,lower,24.0,1.0,trained,79.2,5.5,33.57,33.57,2.0,2.0,302.13,9.0,2.0,33.33,mixed,14.0,No,No,41.04,45.41,6.37,6.22,11,Vastus Lateralis Cross-Sectional Area (Ultrasound),Hypertrophy,0.67,High,0,0,2,0,Medium
+66,Enes,2023,between,lower,24.0,1.0,trained,79.2,5.5,33.57,33.57,2.0,2.0,302.13,9.0,2.0,33.33,mixed,14.0,No,No,13.67,14.79,1.67,1.32,11,Sum of Lateral Thigh MT,Hypertrophy,0.72,High,0,0,2,0,Medium
+67,Van Vossel,2023,within,lower,21.9,0.55,untrained,68.33,3.5,6.95,6.95,2.0,2.0,85.59,12.32,2.0,100.0,failure,10.0,No,No,1798.0,1882.0,318.0,312.0,11,Quadriceps Muscle Volume,Hypertrophy,0.26,Moderate,1,0,0,0,Medium
+67,Van Vossel,2023,within,lower,21.9,0.55,untrained,68.33,3.5,6.95,6.95,2.0,2.0,144.09,20.74,2.0,100.0,failure,10.0,No,No,637.0,693.0,130.0,131.0,11,Hamstrings Muscle Volume,Hypertrophy,0.41,Moderate,1,0,0,0,Medium
+67,Van Vossel,2023,within,upper,21.9,0.55,untrained,68.33,3.5,6.95,6.95,2.0,2.0,104.0,14.97,2.0,100.0,failure,10.0,No,No,303.0,323.0,91.0,95.0,11,Biceps Brachii Muscle Volume,Hypertrophy,0.21,Moderate,1,0,0,1,Medium
+67,Van Vossel,2023,within,upper,21.9,0.55,untrained,68.33,3.5,6.95,6.95,2.0,2.0,119.98,17.27,2.0,100.0,failure,10.0,No,No,352.0,404.0,100.0,108.0,11,Triceps Brachii Muscle Volume,Hypertrophy,0.48,Moderate,1,0,0,1,Medium
+67,Van Vossel,2023,within,lower,21.9,0.55,untrained,68.33,3.5,6.95,6.95,2.0,2.0,85.59,12.32,2.0,100.0,failure,10.0,No,No,4370.1,4450.63,772.08,782.94,11,Vastus Lateralis Biopsy Type I CSA,Hypertrophy,0.1,Moderate,1,0,0,0,Low
+67,Van Vossel,2023,within,lower,21.9,0.55,untrained,68.33,3.5,6.95,6.95,2.0,2.0,85.59,12.32,2.0,100.0,failure,10.0,No,No,4427.28,4683.11,904.42,883.25,11,Vastus Lateralis Biopsy Type II CSA,Hypertrophy,0.28,Moderate,1,0,0,0,Medium
+67,Van Vossel,2023,within,lower,22.3,0.5,untrained,69.02,3.5,10.5,10.5,3.0,3.0,135.87,12.94,2.0,100.0,failure,10.0,No,No,1794.0,1909.0,317.0,329.0,10,Quadriceps Muscle Volume,Hypertrophy,0.34,Moderate,1,0,0,0,Medium
+67,Van Vossel,2023,within,lower,22.3,0.5,untrained,69.02,3.5,10.5,10.5,3.0,3.0,227.43,21.66,2.0,100.0,failure,10.0,No,No,636.0,706.0,131.0,140.0,10,Hamstrings Muscle Volume,Hypertrophy,0.49,Moderate,1,0,0,0,Medium
+67,Van Vossel,2023,within,upper,22.3,0.5,untrained,69.02,3.5,10.5,10.5,3.0,3.0,164.54,15.67,2.0,100.0,failure,10.0,No,No,299.0,325.0,85.0,94.0,10,Biceps Brachii Muscle Volume,Hypertrophy,0.28,Moderate,1,0,0,1,Medium
+67,Van Vossel,2023,within,upper,22.3,0.5,untrained,69.02,3.5,10.5,10.5,3.0,3.0,191.84,18.27,2.0,100.0,failure,10.0,No,No,347.0,414.0,101.0,115.0,10,Triceps Brachii Muscle Volume,Hypertrophy,0.59,Moderate,1,0,0,1,Medium
+67,Van Vossel,2023,within,lower,22.3,0.5,untrained,69.02,3.5,10.5,10.5,3.0,3.0,135.87,12.94,2.0,100.0,failure,10.0,No,No,4386.35,4397.05,868.56,942.1,10,Vastus Lateralis Biopsy Type I CSA,Hypertrophy,0.01,Moderate,1,0,0,0,Low
+67,Van Vossel,2023,within,lower,22.3,0.5,untrained,69.02,3.5,10.5,10.5,3.0,3.0,135.87,12.94,2.0,100.0,failure,10.0,No,No,4365.54,4405.05,1016.68,1020.59,10,Vastus Lateralis Biopsy Type II CSA,Hypertrophy,0.04,Moderate,1,0,0,0,Low
+69,Pedersen,2024,between,lower,21.6,0.27,trained,72.2,3.5,13.5,13.5,1.0,1.0,118.5,8.78,2.78,0.0,mixed,8.0,No,No,24.2,27.1,3.3,2.4,11,Vastus Lateralis MT,Hypertrophy,0.97,Moderate,0,0,2,0,High
+69,Pedersen,2024,between,lower,21.5,0.36,trained,72.3,3.5,13.5,13.5,3.0,4.0,118.5,8.78,2.78,0.0,mixed,8.0,No,No,24.4,26.6,4.0,4.6,11,Vastus Lateralis MT,Hypertrophy,0.49,Moderate,0,0,2,0,Medium

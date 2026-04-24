@@ -1,0 +1,7 @@
+Model,RMSE,CI_lower,CI_upper,MAE,R²,CV_std,Notes
+Dummy,0.427,0.2719,0.602,0.3077,-0.0,0.0,Predict-mean baseline
+Linear,0.3893,0.2223,0.5416,0.2524,0.1689,0.0532,Assumes linearity
+GAM,0.3248,0.2055,0.4582,0.2302,0.4216,0.0586,"Smooth non-linear, additive"
+EBM,0.3176,0.178,0.4591,0.203,0.4469,0.0537,Non-linear + interactions ← PRIMARY
+NGBoost,0.2905,0.1771,0.4059,0.1892,0.5373,0.0462,Probabilistic (μ±σ) for uncertainty
+TabNet,0.369,0.2046,0.5429,0.2342,0.2535,,DL — negative evidence (n=198 too small)
