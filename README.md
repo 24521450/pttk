@@ -1,20 +1,16 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Cách chạy
 
-# Run and deploy your AI Studio app
+## Bước 1 — Cài Python dependencies (chỉ cần làm 1 lần)
+cd "f:\class project\pttk\AI_ML"
 
-This contains everything you need to run your app locally.
+pip install -r requirements.txt
 
-View your app in AI Studio: https://ai.studio/apps/8986205c-baf3-4bfd-8b42-c78580b6bab9
+## Bước 2 — Start backend
+# Windows
+AI_ML\start_backend.bat
 
-## Run Locally
+## Bước 3 — Start frontend
+npm run dev
 
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Bước 4 — Mở trình duyệt
+Truy cập: http://localhost:3000
