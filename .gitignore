@@ -6,3 +6,18 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.venv/
+venv/
+.Python
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+Thumbs.db

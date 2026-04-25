@@ -17,7 +17,7 @@ export default function App() {
       <main className="flex-1 md:ml-64 flex flex-col min-h-screen">
         <Header />
 
-        <div className="flex-1 overflow-y-auto">
+        <div key={activePage} className="page-enter flex-1 overflow-y-auto">
           {activePage === "overview" && <DataOverview />}
           {activePage === "volume" && <VolumeVsHypertrophy />}
           {activePage === "optimizer" && <VolumeOptimizer />}
