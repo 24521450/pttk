@@ -1,70 +1,58 @@
 @echo off
-chcp 65001 >nul
-title TrainHyp AI — Launcher
-color 0B
+title TrainHyp AI Launcher
 
 echo.
-echo  ╔══════════════════════════════════════════╗
-echo  ║       🏋️  TrainHyp AI — Launcher         ║
-echo  ║       STAT3013 · 2026                    ║
-echo  ╚══════════════════════════════════════════╝
+echo ==========================================
+echo   TrainHyp AI - STAT3013 2026
+echo ==========================================
 echo.
 
-:: ─── Detect project root (where this .bat lives) ────────────────────────────
+:: Root = folder this bat lives in
 set "ROOT=%~dp0"
-cd /d "%ROOT%"
 
-:: ─── Step 1: Install Python dependencies ────────────────────────────────────
+:: --- Step 1: Python dependencies ---
 echo [1/3] Installing Python dependencies...
-echo.
-pip install -r "%ROOT%AI_ML\requirements.txt" --quiet 2>nul
+pip install -r "%ROOT%AI_ML\requirements.txt"
 if %ERRORLEVEL% NEQ 0 (
-    echo  ⚠  pip install failed — trying with python -m pip...
-    python -m pip install -r "%ROOT%AI_ML\requirements.txt" --quiet 2>nul
+    echo WARNING: pip failed, trying python -m pip...
+    python -m pip install -r "%ROOT%AI_ML\requirements.txt"
 )
-echo  ✅  Python dependencies ready.
 echo.
 
-:: ─── Step 2: Install Node dependencies (first time) ────────────────────────
+:: --- Step 2: Node dependencies ---
 echo [2/3] Checking Node dependencies...
-if not exist "%ROOT%node_modules" (
-    echo  📦  node_modules not found — running npm install...
-    call npm install --silent
-    echo  ✅  Node dependencies installed.
+if not exist "%ROOT%node_modules\" (
+    echo Running npm install...
+    call npm install
 ) else (
-    echo  ✅  node_modules already exists — skipping.
+    echo node_modules present - skipping.
 )
 echo.
 
-:: ─── Step 3: Start Backend (new window) ─────────────────────────────────────
-echo [3/3] Starting services...
-echo.
-echo  🔧  Starting Backend  →  http://localhost:8000
-echo  🔧  API Docs           →  http://localhost:8000/docs
+:: --- Step 3: Start Backend ---
+echo [3/3] Launching services...
+echo Backend  -^>  http://localhost:8000
+echo API Docs -^>  http://localhost:8000/docs
 
-start "TrainHyp Backend" cmd /k "cd /d "%ROOT%AI_ML" && title TrainHyp Backend (port 8000) && color 0A && echo. && echo  🟢 Backend starting... && echo. && uvicorn main_fastapi:app --host 0.0.0.0 --port 8000 --reload"
+:: /d sets the working directory WITHOUT nested quotes issue
+start "TrainHyp Backend" /d "%ROOT%AI_ML" cmd /k "color 0A && echo. && echo  Backend ready: http://localhost:8000 && echo. && python -m uvicorn main_fastapi:app --host 0.0.0.0 --port 8000 --reload"
 
-:: Wait 3 seconds for backend to initialize before starting frontend
 timeout /t 3 /nobreak >nul
 
-:: ─── Step 4: Start Frontend (new window) ────────────────────────────────────
-echo  🌐  Starting Frontend  →  http://localhost:5173
-echo.
+:: --- Step 4: Start Frontend ---
+echo Frontend -^>  http://localhost:5173
 
-start "TrainHyp Frontend" cmd /k "cd /d "%ROOT%" && title TrainHyp Frontend (port 5173) && color 0E && echo. && echo  🟢 Frontend starting... && echo. && npm run dev"
+start "TrainHyp Frontend" /d "%ROOT%" cmd /k "color 0E && echo. && echo  Frontend ready: http://localhost:5173 && echo. && npm run dev"
 
-:: ─── Done ───────────────────────────────────────────────────────────────────
-timeout /t 2 /nobreak >nul
 echo.
-echo  ╔══════════════════════════════════════════╗
-echo  ║  ✅  All services launched!               ║
-echo  ║                                          ║
-echo  ║  Backend:   http://localhost:8000         ║
-echo  ║  API Docs:  http://localhost:8000/docs    ║
-echo  ║  Frontend:  http://localhost:5173         ║
-echo  ║                                          ║
-echo  ║  Close this window to keep running.      ║
-echo  ║  Close ALL windows to stop everything.   ║
-echo  ╚══════════════════════════════════════════╝
+echo ==========================================
+echo   All services launched!
+echo.
+echo   Backend:   http://localhost:8000
+echo   API Docs:  http://localhost:8000/docs
+echo   Frontend:  http://localhost:5173
+echo.
+echo   Close this window when finished.
+echo ==========================================
 echo.
 pause
