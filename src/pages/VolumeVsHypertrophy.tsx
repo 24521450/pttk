@@ -1,294 +1,280 @@
-import { TrendingUp } from "lucide-react";
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis, Tooltip, Cell } from "recharts";
+import { useState, useMemo } from "react";
+import {
+  ScatterChart, Scatter, XAxis, YAxis, Tooltip,
+  ResponsiveContainer, ReferenceLine, CartesianGrid, Cell,
+} from "recharts";
+import { TrendingUp, Info, ChevronDown } from "lucide-react";
+import { RAW_POINTS, DATASET_STATS } from "../data/studyData";
 
-const scatterData = [
-  { x: 5, y: 0.1 },
-  { x: 8, y: 0.25 },
-  { x: 12, y: 0.38 },
-  { x: 15, y: 0.45 },
-  { x: 18, y: 0.52 },
-  { x: 22, y: 0.55 },
-  { x: 26, y: 0.51 },
-  { x: 30, y: 0.48 },
-  { x: 35, y: 0.42 },
+// ─── Colour by class ──────────────────────────────────────────────────────────
+const CLS_COLOR: Record<string, string> = {
+  High: "#0058be",
+  Medium: "#f59e0b",
+  Low: "#ef4444",
+};
+
+// ─── Mean-g per sets bucket (for trend line) ──────────────────────────────────
+function buildTrend(points: typeof RAW_POINTS) {
+  const buckets: Record<number, number[]> = {};
+  points.forEach(p => {
+    const bucket = Math.round(p.sets / 5) * 5; // round to nearest 5
+    if (!buckets[bucket]) buckets[bucket] = [];
+    buckets[bucket].push(p.g);
+  });
+  return Object.entries(buckets)
+    .map(([k, vals]) => ({
+      x: Number(k),
+      y: +(vals.reduce((s, v) => s + v, 0) / vals.length).toFixed(3),
+    }))
+    .sort((a, b) => a.x - b.x);
+}
+
+// ─── Correlation table data ───────────────────────────────────────────────────
+// Pre-computed (Pearson r) from the 199 data points
+const CORRELATIONS = [
+  { feature: "sets.week.all",          r: 0.31,  label: "Sets / Week (All)" },
+  { feature: "sets.week.direct",       r: 0.14,  label: "Sets / Week (Direct)" },
+  { feature: "sessions.per.week",      r: 0.20,  label: "Sessions / Week" },
+  { feature: "percentage.failure.all", r: -0.04, label: "% Sets to Failure" },
+  { feature: "weeks",                  r: 0.15,  label: "Program Duration (wks)" },
+  { feature: "rep.range.all",          r: 0.01,  label: "Rep Range" },
+  { feature: "age",                    r: -0.09, label: "Age" },
+  { feature: "interset.rest.min.all",  r: -0.01, label: "Rest Between Sets" },
 ];
 
-const curveData = [
-  { x: 0, y: 0.05 },
-  { x: 5, y: 0.2 },
-  { x: 10, y: 0.4 },
-  { x: 15, y: 0.55 },
-  { x: 20, y: 0.62 },
-  { x: 25, y: 0.65 },
-  { x: 30, y: 0.62 },
-  { x: 35, y: 0.55 },
-  { x: 40, y: 0.45 },
-];
+// ─── Loading skeleton ─────────────────────────────────────────────────────────
+function Skeleton({ h = "h-[360px]" }: { h?: string }) {
+  return (
+    <div className={`bg-white rounded-[24px] ${h} border border-[#c2c6d6]/10 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] animate-pulse`}>
+      <div className="p-8 flex flex-col gap-4 h-full">
+        <div className="h-4 bg-[#f2f3ff] rounded w-1/3" />
+        <div className="flex-1 bg-[#f2f3ff] rounded-xl" />
+      </div>
+    </div>
+  );
+}
+
+// ─── Scatter custom tooltip ───────────────────────────────────────────────────
+function ScatterTip({ active, payload }: any) {
+  if (!active || !payload?.[0]) return null;
+  const d = payload[0].payload;
+  return (
+    <div className="bg-white text-[11px] font-semibold px-3 py-2 rounded-lg shadow-lg border border-[#c2c6d6]/20">
+      <div>Sets/week: <span className="text-[#0058be]">{d.sets}</span></div>
+      <div>Hedges' g: <span className="text-[#0058be]">{d.g}</span></div>
+      <div>Class: <span style={{ color: CLS_COLOR[d.cls] }}>{d.cls}</span></div>
+      <div>Status: {d.trained ? "Trained" : "Untrained"}</div>
+    </div>
+  );
+}
 
 export default function VolumeVsHypertrophy() {
+  const [clsFilter, setClsFilter] = useState<"all" | "High" | "Medium" | "Low">("all");
+  const [trainFilter, setTrainFilter] = useState<"all" | "trained" | "untrained">("all");
+  const [isLoading] = useState(false); // synchronous data
+
+  const filtered = useMemo(() => RAW_POINTS.filter(p => {
+    if (clsFilter !== "all" && p.cls !== clsFilter) return false;
+    if (trainFilter === "trained"   && !p.trained) return false;
+    if (trainFilter === "untrained" &&  p.trained) return false;
+    return true;
+  }), [clsFilter, trainFilter]);
+
+  const trend = useMemo(() => buildTrend(filtered), [filtered]);
+
+  // Pearson r for filtered scatter
+  const pearsonR = useMemo(() => {
+    const n = filtered.length;
+    if (n < 2) return 0;
+    const mx = filtered.reduce((s, p) => s + p.sets, 0) / n;
+    const my = filtered.reduce((s, p) => s + p.g, 0) / n;
+    const num = filtered.reduce((s, p) => s + (p.sets - mx) * (p.g - my), 0);
+    const den = Math.sqrt(
+      filtered.reduce((s, p) => s + (p.sets - mx) ** 2, 0) *
+      filtered.reduce((s, p) => s + (p.g - my) ** 2, 0)
+    );
+    return den === 0 ? 0 : +(num / den).toFixed(3);
+  }, [filtered]);
+
+  const filterBtn = (active: boolean) =>
+    `px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
+      active ? "bg-[#0058be] text-white shadow-sm" : "bg-[#f2f3ff] text-[#424754] hover:bg-[#e8eaff]"
+    }`;
+
   return (
-    <div className="p-6 md:p-8 max-w-[1400px] mx-auto w-full space-y-8">
+    <div className="p-6 lg:p-10 max-w-[1400px] mx-auto w-full space-y-8">
       {/* Header */}
-      <header className="mb-6">
-        <h1 className="text-[44px] font-bold text-[#131b2e] tracking-tight mb-2 leading-none">
+      <header>
+        <h1 className="text-3xl lg:text-4xl font-bold text-[#131b2e] tracking-tight mb-2">
           Volume vs Hypertrophy
         </h1>
-        <p className="text-[15px] text-[#424754] tracking-normal">
-          Exploring the relationship between training volume and muscle hypertrophy
+        <p className="text-[13px] text-[#424754] font-medium">
+          Relationship between weekly training volume and muscle hypertrophy effect size (Hedges' g)
         </p>
       </header>
 
-      {/* Summary Cards */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white rounded-2xl p-6 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10 flex flex-col justify-between">
-          <p className="text-[10px] text-[#424754] font-bold tracking-widest mb-4 uppercase">
-            Correlation Strength
-          </p>
-          <div className="flex items-end gap-3">
-            <h3 className="text-[44px] font-bold text-[#0058be] leading-none tracking-tight">0.68</h3>
-            <span className="text-[10px] bg-[#d8e2ff] text-[#004395] px-2 py-1.5 rounded font-bold mb-1 leading-tight flex items-center">
-              (Moderate-<br/>Strong)
-            </span>
+      {/* Stats pills */}
+      <div className="flex flex-wrap gap-3">
+        {[
+          { label: "Total observations", value: filtered.length },
+          { label: "Pearson r (sets vs g)", value: pearsonR > 0 ? `+${pearsonR}` : String(pearsonR) },
+          { label: "Overall mean ES", value: DATASET_STATS.mean_g },
+          { label: "High responders", value: DATASET_STATS.pct_high + "%" },
+        ].map(({ label, value }) => (
+          <div key={label} className="bg-white rounded-xl px-4 py-2.5 shadow-[0_2px_12px_rgba(19,27,46,0.06)] border border-[#c2c6d6]/10 flex items-center gap-3">
+            <span className="text-[10px] font-bold text-[#424754] uppercase tracking-widest">{label}</span>
+            <span className="text-sm font-bold text-[#0058be]">{value}</span>
           </div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-6 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10 flex flex-col justify-between">
-          <p className="text-[10px] text-[#424754] font-bold tracking-widest mb-4 uppercase">
-            Best Volume Range
-          </p>
-          <div className="flex items-end gap-2">
-            <h3 className="text-[44px] font-bold text-[#0058be] leading-none tracking-tight">12-20</h3>
-            <span className="text-[11px] text-[#131b2e] font-semibold mb-1">
-              sets/week
-            </span>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-6 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10 flex flex-col justify-between">
-          <p className="text-[10px] text-[#424754] font-bold tracking-widest mb-4 uppercase">
-            Mean Hedges' g
-          </p>
-          <div className="flex items-end gap-3">
-            <h3 className="text-[44px] font-bold text-[#0058be] leading-none tracking-tight">0.42</h3>
-            <span className="text-[10px] text-[#006b00] bg-[#e6f4e6] px-1.5 py-1 rounded font-bold mb-1.5 flex items-center shadow-sm">
-              <TrendingUp className="w-3.5 h-3.5 mr-0.5" strokeWidth={3} />
-              +0.05
-            </span>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-6 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10 flex flex-col justify-between">
-          <p className="text-[10px] text-[#424754] font-bold tracking-widest mb-4 uppercase">
-            Number of Studies
-          </p>
-          <div className="flex items-end gap-2">
-            <h3 className="text-[44px] font-bold text-[#0058be] leading-none tracking-tight">70</h3>
-            <span className="text-xs text-[#131b2e] font-bold mb-1">n</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Middle Grid: Charts */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-        {/* Main Scatter Plot */}
-        <section className="xl:col-span-2 bg-white rounded-[24px] p-8 relative shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10">
-          <header className="mb-6">
-            <h2 className="text-[17px] font-bold text-[#131b2e] mb-1">
-              Sets per Week vs Hedges' g
-            </h2>
-            <p className="text-[13px] text-[#424754]">
-              Scatter plot showing individual data points with a regression line
-              and confidence band.
-            </p>
-          </header>
-          
-          <div className="bg-[#fcfdff] rounded-2xl h-[360px] p-6 relative flex items-center justify-center isolate border border-[#e2e7ff]/30 border-t-0 border-r-0 rounded-tl-none rounded-br-none border-l-2 border-b-2">
-             {/* Simple background grid lines */}
-             <div className="absolute inset-0 z-0">
-               <div className="w-full h-full border-b border-r border-[#c2c6d6]/20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTAgMGg0MHY0MEgweiIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik00MCAwaC0xdjQwaDFWMHptMCA0MGgtNDB2LTFoNDB2MXoiIGZpbGw9IiNjMmM2ZDYiIGZpbGwtb3BhY2l0eT0iMC4yIi8+PC9zdmc+')]"></div>
-             </div>
-
-            <ResponsiveContainer width="100%" height="100%" className="z-10 relative left-2">
-              <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
-                {/* Confidence Band Mock (Area) */}
-                <XAxis type="number" dataKey="x" hide domain={[0, 40]} />
-                <YAxis type="number" dataKey="y" hide domain={[0, 0.8]} />
-                
-                {/* Simulated Regression Path using SVG overlay for precise curve */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
-                  <path 
-                    d="M 10,100% L 100%,15%" 
-                    fill="none" 
-                    stroke="#d8e2ff" 
-                    strokeWidth="32" 
-                    opacity="0.5"
-                    vectorEffect="non-scaling-stroke"
-                  />
-                   <path 
-                    d="M 10,100% L 100%,15%" 
-                    fill="none" 
-                    stroke="#001a42" 
-                    strokeWidth="4"
-                    vectorEffect="non-scaling-stroke" 
-                  />
-                </svg>
-
-                <Scatter name="Studies" data={scatterData}>
-                   {scatterData.map((entry, index) => {
-                     // Varying opacities to simulate density
-                     const op= [0.9, 0.7, 0.4, 0.8, 0.6][index % 5];
-                     const size = [80, 150, 60, 100, 120][index % 5];
-                     return <Cell key={`cell-${index}`} fill="#0058be" opacity={op} className="mix-blend-multiply" style={{r: Math.sqrt(size/Math.PI)}} />;
-                   })}
-                </Scatter>
-              </ScatterChart>
-            </ResponsiveContainer>
-            
-            <div className="absolute bottom-1 right-2 text-[10px] text-[#424754] uppercase tracking-wide bg-[#fcfdff]/80">
-              Sets / Week
-            </div>
-             <div className="absolute -left-3 top-1 text-[10px] text-[#424754] uppercase tracking-wide rotate-90 origin-left">
-              Hedges' g
-            </div>
-          </div>
-        </section>
-
-        {/* Dose-Response Curve */}
-        <section className="bg-white rounded-[24px] p-8 relative flex flex-col shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10">
-          <header className="mb-6">
-            <h2 className="text-[17px] font-bold text-[#131b2e] mb-1">
-              Dose-Response Pattern
-            </h2>
-            <p className="text-[13px] text-[#424754]">
-              Hypertrophy response peaking then plateauing.
-            </p>
-          </header>
-          
-          <div className="bg-[#fcfdff] rounded-2xl flex-1 relative flex flex-col items-center justify-center min-h-[300px] border border-[#e2e7ff]/30">
-            {/* Optimal Range Highlight */}
-            <div className="absolute top-0 bottom-0 left-[30%] w-[25%] bg-[#d8e2ff] opacity-60 z-0"></div>
-            <span className="absolute top-4 left-[31%] text-[9px] font-bold text-[#0058be] z-10">Optimal Range</span>
-            <span className="absolute top-10 right-4 text-[9px] font-bold text-[#131b2e] z-10">Plateau Region</span>
-
-            <ResponsiveContainer width="100%" height="80%" className="z-10 mt-auto">
-               <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full overflow-visible">
-                 <path d="M 0 100 Q 25 80 40 20 T 90 30 L 100 40" fill="none" stroke="#0058be" strokeWidth="6" />
-               </svg>
-            </ResponsiveContainer>
-          </div>
-        </section>
+        ))}
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        {/* Correlation Heatmap */}
-        <section className="bg-white rounded-[24px] p-8 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10">
-          <header className="mb-6">
-            <h2 className="text-[17px] font-bold text-[#131b2e] mb-1">
-              Correlation Heatmap
-            </h2>
-          </header>
-          
-          <div className="bg-[#f2f3ff] rounded-xl p-6 shadow-none">
-            <div className="grid grid-cols-6 gap-1.5 mb-2 text-[10px] text-[#424754] font-medium text-center">
-              <div>sets</div>
-              <div>reps</div>
-              <div>% fail</div>
-              <div>wks</div>
-              <div>age</div>
-              <div>g</div>
-            </div>
-            <div className="grid grid-cols-6 gap-1.5">
-              {/* Row 1 */}
-              <div className="aspect-square bg-[#001a42] rounded flex items-center justify-center text-white text-[11px] font-bold">1</div>
-              <div className="aspect-square bg-[#0058be] rounded"></div>
-              <div className="aspect-square bg-[#2170e4] rounded opacity-70"></div>
-              <div className="aspect-square bg-[#adc6ff] rounded opacity-50"></div>
-              <div className="aspect-square bg-[#eaedff] rounded"></div>
-              <div className="aspect-square bg-[#004395] rounded"></div>
-              
-              {/* Row 2 */}
-              <div className="aspect-square bg-[#0058be] rounded"></div>
-              <div className="aspect-square bg-[#001a42] rounded flex items-center justify-center text-white text-[11px] font-bold">1</div>
-              <div className="aspect-square bg-[#adc6ff] rounded opacity-60"></div>
-              <div className="aspect-square bg-[#eaedff] rounded"></div>
-              <div className="aspect-square bg-[#faf8ff] rounded border border-[#c2c6d6]/20"></div>
-              <div className="aspect-square bg-[#2170e4] rounded opacity-80"></div>
-              
-              {/* Row 3 */}
-              <div className="aspect-square bg-[#2170e4] rounded opacity-70"></div>
-              <div className="aspect-square bg-[#adc6ff] rounded opacity-60"></div>
-              <div className="aspect-square bg-[#001a42] rounded flex items-center justify-center text-white text-[11px] font-bold">1</div>
-              <div className="aspect-square bg-[#0058be] rounded opacity-90"></div>
-              <div className="aspect-square bg-[#adc6ff] rounded opacity-40"></div>
-              <div className="aspect-square bg-[#004395] rounded"></div>
-            </div>
-          </div>
-        </section>
-
-        {/* Subgroup Comparison */}
-        <section className="bg-white rounded-[24px] p-8 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10 flex flex-col">
-          <header className="mb-6">
-            <h2 className="text-[17px] font-bold text-[#131b2e] mb-1">
-              Subgroup Analysis
-            </h2>
-            <p className="text-[13px] text-[#424754]">
-              Comparative effects across variables.
-            </p>
-          </header>
-          
-          <div className="space-y-4 flex-1 flex flex-col justify-center">
-            {/* Comparison 1 */}
-            <div className="flex items-center justify-between bg-[#fcfdff] border border-[#f2f3ff] rounded-xl p-4 shadow-sm hover:shadow transition-shadow">
-              <span className="text-[12px] font-semibold text-[#131b2e]">Trained vs Untrained</span>
-              <div className="flex items-center gap-3">
-                <span className="bg-[#d8e2ff] text-[#0058be] px-3.5 py-1 rounded-[6px] text-xs font-bold leading-none">
-                  0.45
-                </span>
-                <div className="w-10 h-1.5 bg-[#0058be] rounded-full"></div>
-                <span className="text-[#c2c6d6] text-[10px] font-semibold uppercase">vs</span>
-                <div className="w-8 h-1.5 bg-[#c2c6d6] rounded-full"></div>
-                <span className="bg-[#eaedff] text-[#424754] px-3.5 py-1 rounded-[6px] text-xs font-semibold leading-none">
-                  0.38
-                </span>
-              </div>
-            </div>
-            
-            {/* Comparison 2 */}
-            <div className="flex items-center justify-between bg-[#fcfdff] border border-[#f2f3ff] rounded-xl p-4 shadow-sm hover:shadow transition-shadow">
-              <span className="text-[12px] font-semibold text-[#131b2e]">Surplus vs Deficit</span>
-               <div className="flex items-center gap-3">
-                <span className="bg-[#d8e2ff] text-[#0058be] px-3.5 py-1 rounded-[6px] text-xs font-bold leading-none">
-                  0.48
-                </span>
-                <div className="w-12 h-1.5 bg-[#0058be] rounded-full"></div>
-                <span className="text-[#c2c6d6] text-[10px] font-semibold uppercase">vs</span>
-                <div className="w-6 h-1.5 bg-[#c2c6d6] rounded-full"></div>
-                <span className="bg-[#eaedff] text-[#424754] px-3.5 py-1 rounded-[6px] text-xs font-semibold leading-none">
-                  0.32
-                </span>
-              </div>
-            </div>
-
-            {/* Comparison 3 */}
-            <div className="flex items-center justify-between bg-[#fcfdff] border border-[#f2f3ff] rounded-xl p-4 shadow-sm hover:shadow transition-shadow">
-              <span className="text-[12px] font-semibold text-[#131b2e]">Failure vs Non-failure</span>
-               <div className="flex items-center gap-3">
-                <span className="bg-[#d8e2ff] text-[#0058be] px-3.5 py-1 rounded-[6px] text-xs font-bold leading-none">
-                  0.41
-                </span>
-                <div className="w-10 h-1.5 bg-[#0058be] rounded-full"></div>
-                <span className="text-[#c2c6d6] text-[10px] font-semibold uppercase">vs</span>
-                <div className="w-9 h-1.5 bg-[#c2c6d6] rounded-full"></div>
-                <span className="bg-[#eaedff] text-[#424754] px-3.5 py-1 rounded-[6px] text-xs font-semibold leading-none">
-                  0.39
-                </span>
-              </div>
-            </div>
-          </div>
-        </section>
+      {/* Filter Row */}
+      <div className="bg-white rounded-2xl px-6 py-4 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10 flex flex-wrap items-center gap-6">
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-bold text-[#424754] uppercase tracking-widest">Class</span>
+          {(["all", "High", "Medium", "Low"] as const).map(v => (
+            <button key={v} onClick={() => setClsFilter(v)} className={filterBtn(clsFilter === v)}>
+              {v === "all" ? "All" : v}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-bold text-[#424754] uppercase tracking-widest">Status</span>
+          {(["all", "trained", "untrained"] as const).map(v => (
+            <button key={v} onClick={() => setTrainFilter(v)} className={filterBtn(trainFilter === v)}>
+              {v === "all" ? "All" : v === "trained" ? "Trained" : "Untrained"}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="h-4"></div> {/* Bottom padding */}
+      {/* Scatter Plot */}
+      {isLoading ? <Skeleton h="h-[420px]" /> : (
+        <div className="bg-white rounded-[24px] p-8 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10">
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <h3 className="text-[13px] font-bold text-[#131b2e] mb-1">Sets/Week vs Hedges' g (Scatter)</h3>
+              <p className="text-[10px] text-[#727785]">
+                {filtered.length} observations · Colour = Responder Class · r = {pearsonR > 0 ? "+" : ""}{pearsonR}
+              </p>
+            </div>
+            {/* Legend */}
+            <div className="flex gap-4">
+              {Object.entries(CLS_COLOR).map(([cls, color]) => (
+                <span key={cls} className="flex items-center gap-1.5 text-[10px] font-bold text-[#424754]">
+                  <span className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: color }} />
+                  {cls}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <ResponsiveContainer width="100%" height={360}>
+            <ScatterChart margin={{ top: 10, right: 20, left: 10, bottom: 30 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f2f3ff" />
+              <XAxis
+                type="number" dataKey="sets" name="Sets/Week"
+                domain={[0, 52]}
+                label={{ value: "Sets / Week", position: "insideBottom", offset: -10, fontSize: 11, fill: "#727785", fontWeight: 700 }}
+                tick={{ fontSize: 10, fill: "#727785" }} axisLine={false} tickLine={false}
+              />
+              <YAxis
+                type="number" dataKey="g" name="Hedges' g"
+                domain={[-0.35, 2.5]}
+                label={{ value: "Hedges' g", angle: -90, position: "insideLeft", offset: 10, fontSize: 11, fill: "#727785", fontWeight: 700 }}
+                tick={{ fontSize: 10, fill: "#727785" }} axisLine={false} tickLine={false}
+              />
+              <ReferenceLine y={0} stroke="#ef4444" strokeDasharray="4 3" strokeWidth={1} />
+              <ReferenceLine y={0.2} stroke="#c2c6d6" strokeDasharray="3 2" strokeWidth={1} label={{ value: "Small (0.2)", fontSize: 9, fill: "#c2c6d6" }} />
+              <ReferenceLine y={0.5} stroke="#c2c6d6" strokeDasharray="3 2" strokeWidth={1} label={{ value: "Medium (0.5)", fontSize: 9, fill: "#c2c6d6" }} />
+              <ReferenceLine y={0.8} stroke="#c2c6d6" strokeDasharray="3 2" strokeWidth={1} label={{ value: "Large (0.8)", fontSize: 9, fill: "#c2c6d6" }} />
+              <Tooltip content={<ScatterTip />} />
+              <Scatter data={filtered} fillOpacity={0.75}>
+                {filtered.map((p, i) => (
+                  <Cell key={i} fill={CLS_COLOR[p.cls]} />
+                ))}
+              </Scatter>
+            </ScatterChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
+      {/* Feature-outcome correlation table */}
+      {isLoading ? <Skeleton h="h-[200px]" /> : (
+        <div className="bg-white rounded-[24px] p-8 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10">
+          <div className="flex items-center gap-2 mb-6">
+            <h3 className="text-[13px] font-bold text-[#131b2e]">
+              Feature–Outcome Correlation (Pearson r with Hedges' g)
+            </h3>
+            <div className="group relative">
+              <Info className="w-4 h-4 text-[#c2c6d6] cursor-help" />
+              <div className="absolute left-6 top-0 z-10 hidden group-hover:block bg-white rounded-xl shadow-xl border border-[#c2c6d6]/20 p-3 w-60 text-[10px] text-[#424754] font-medium leading-relaxed">
+                Pearson r computed across all 199 observations. Positive = more → higher ES. Negative = inverse relationship.
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            {CORRELATIONS.sort((a, b) => Math.abs(b.r) - Math.abs(a.r)).map(({ label, r }) => {
+              const pct = Math.abs(r) / 0.40 * 100; // scale to max expected r (~0.40)
+              const positive = r >= 0;
+              return (
+                <div key={label} className="flex items-center gap-4">
+                  <span className="text-[11px] font-semibold text-[#424754] w-44 flex-shrink-0">{label}</span>
+                  <div className="flex-1 flex items-center gap-2">
+                    {/* zero line in centre */}
+                    <div className="flex-1 h-2 bg-[#f2f3ff] rounded-full overflow-hidden relative">
+                      {positive ? (
+                        <div
+                          className="absolute left-0 top-0 h-full bg-[#0058be] rounded-full transition-all duration-500"
+                          style={{ width: `${pct}%` }}
+                        />
+                      ) : (
+                        <div
+                          className="absolute right-0 top-0 h-full bg-[#ef4444] rounded-full transition-all duration-500"
+                          style={{ width: `${pct}%` }}
+                        />
+                      )}
+                    </div>
+                    <span className={`text-[11px] font-bold w-12 text-right ${positive ? "text-[#0058be]" : "text-[#ef4444]"}`}>
+                      {r > 0 ? "+" : ""}{r.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="mt-6 flex items-start gap-2 text-[10px] text-[#727785] font-medium">
+            <ChevronDown className="w-3 h-3 flex-shrink-0 mt-0.5" />
+            Sets/week shows the strongest positive correlation (r = +0.31). Percentage-to-failure shows a weak negative correlation, consistent with the dose-response model.
+          </div>
+        </div>
+      )}
+
+      {/* Trend summary */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        {[
+          { range: "1–10 sets/wk",  label: "Low Volume",    g: trend.filter(t => t.x >= 1  && t.x <= 10).map(t => t.y), color: "#ef4444" },
+          { range: "11–25 sets/wk", label: "Moderate Volume", g: trend.filter(t => t.x > 10 && t.x <= 25).map(t => t.y), color: "#f59e0b" },
+          { range: "26–50 sets/wk", label: "High Volume",   g: trend.filter(t => t.x > 25).map(t => t.y),               color: "#0058be" },
+        ].map(({ range, label, g, color }) => {
+          const avg = g.length ? +(g.reduce((s, v) => s + v, 0) / g.length).toFixed(2) : null;
+          return (
+            <div key={label} className="bg-white rounded-2xl p-6 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10">
+              <div className="flex items-center gap-2 mb-3">
+                <TrendingUp className="w-4 h-4" style={{ color }} />
+                <span className="text-[10px] font-bold text-[#424754] uppercase tracking-widest">{label}</span>
+              </div>
+              <div className="text-3xl font-light" style={{ color }}>
+                {avg !== null ? avg : "—"}
+              </div>
+              <div className="text-[10px] text-[#727785] font-medium mt-1">mean Hedges' g</div>
+              <div className="text-[9px] text-[#c2c6d6] mt-0.5">{range}</div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

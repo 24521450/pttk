@@ -1,251 +1,415 @@
-import { ArrowDown, PersonStanding, Lightbulb, Settings2, User } from "lucide-react";
-import { Area, ComposedChart, Line, ReferenceArea, ResponsiveContainer, Scatter, XAxis, YAxis } from "recharts";
+import { useState, useEffect } from "react";
+import {
+  Line, LineChart, ReferenceArea, ReferenceLine,
+  ResponsiveContainer, XAxis, YAxis, Tooltip,
+} from "recharts";
+import {
+  CheckCircle2, AlertTriangle, BookOpen,
+  User, TrendingUp, Shield, Activity,
+} from "lucide-react";
+import testCasesData from "../data/test_cases.json";
+import type { TestCase, PredictionResult, BackendResponse } from "../types";
 
-const curveData = [
-  { x: 0, y: 0.05, ciLow: 0.02, ciHigh: 0.08 },
-  { x: 5, y: 0.15, ciLow: 0.1, ciHigh: 0.2 },
-  { x: 10, y: 0.35, ciLow: 0.25, ciHigh: 0.45 },
-  { x: 12, y: 0.45, ciLow: 0.35, ciHigh: 0.55 },
-  { x: 15, y: 0.48, ciLow: 0.38, ciHigh: 0.58 },
-  { x: 20, y: 0.5, ciLow: 0.4, ciHigh: 0.6 },
-  { x: 25, y: 0.52, ciLow: 0.41, ciHigh: 0.62 },
-  { x: 30, y: 0.51, ciLow: 0.4, ciHigh: 0.61 },
-  { x: 35, y: 0.5, ciLow: 0.38, ciHigh: 0.6 },
-];
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+const CLASS_COLOR: Record<string, string> = {
+  High: "#0058be", Medium: "#f59e0b", Low: "#ef4444",
+};
 
+const CLASS_BG: Record<string, string> = {
+  High: "bg-[#d8e2ff] text-[#0058be]",
+  Medium: "bg-[#fef3c7] text-[#92400e]",
+  Low: "bg-[#fee2e2] text-[#991b1b]",
+};
+
+const CLASS_NARRATIVE: Record<string, string> = {
+  High: "This profile shows strong adaptation potential at elevated training volumes. The model predicts a large effect size, suggesting the subject's physiological capacity for hypertrophy is well-matched to their current programming.",
+  Medium: "This profile demonstrates moderate hypertrophic response. Volume is a significant driver, but individual variation in recovery capacity and training history limits peak effect. Consistent programming is key.",
+  Low: "This profile predicts a below-average hypertrophic response under current conditions. Contributing factors may include insufficient volume relative to training status, or unfavourable recovery conditions.",
+};
+
+// ─── Build chart data ─────────────────────────────────────────────────────────
+function buildCurve(curve: PredictionResult["dose_response_curve"], optimalSets?: number) {
+  if (!curve) return [];
+  return curve.sets.map((x, i) => ({
+    x, y: curve.hedges_g[i],
+    isOptimal: x === optimalSets,
+  }));
+}
+
+// ─── Optimal dot ──────────────────────────────────────────────────────────────
+const OptimalDot = (props: any) => {
+  const { cx, cy, payload } = props;
+  if (payload.isOptimal)
+    return <circle cx={cx} cy={cy} r={6} stroke="#0058be" strokeWidth={3} fill="white" />;
+  return null;
+};
+
+// ─── Tooltip ──────────────────────────────────────────────────────────────────
+function CurveTip({ active, payload }: any) {
+  if (!active || !payload?.[0]) return null;
+  const d = payload[0].payload;
+  return (
+    <div className="bg-white text-[11px] font-semibold px-3 py-2 rounded-lg shadow-lg border border-[#c2c6d6]/20">
+      {d.x} sets → g = {(d.y as number).toFixed(3)}
+    </div>
+  );
+}
+
+// ─── Skeleton strip ───────────────────────────────────────────────────────────
+function SkeletonBlock({ h = "h-32" }: { h?: string }) {
+  return <div className={`bg-[#f2f3ff] animate-pulse rounded-2xl ${h} w-full`} />;
+}
+
+// ─── Parse backend ────────────────────────────────────────────────────────────
+function parseBackend(raw: BackendResponse): PredictionResult {
+  const d = raw.data;
+  return {
+    predicted_class:     d.responder_class,
+    predicted_insight:   d.recommendation.insight,
+    responder_insight:   d.responder_insight,
+    confidence:          d.confidence.level === "High" ? 0.95 : 0.70,
+    hedges_g:            d.current_status.hedges_g,
+    optimal_sets:        d.recommendation.optimal_sets,
+    safe_range:          d.recommendation.safe_range,
+    optimal_g:           d.recommendation.optimal_g,
+    sigma_ngb:           d.confidence.sigma_ngb,
+    confidence_ci:       d.current_status.confidence_ci,
+    top_features:        d.top_features,
+    warnings:            d.warnings,
+    dose_response_curve: d.dose_response_curve,
+    isFallback:          false,
+  };
+}
+
+function buildFallback(tc: TestCase): PredictionResult {
+  const cls = tc.expected_class;
+  return {
+    predicted_class:     cls,
+    predicted_insight:   tc.expected_insight,
+    responder_insight:   `Cơ địa ${cls} Responder`,
+    confidence:          cls === "High" ? 0.95 : 0.87,
+    hedges_g:            cls === "High" ? 0.85 : cls === "Medium" ? 0.45 : 0.15,
+    optimal_sets:        Math.round(tc.request_body.sets_week_all * 0.85),
+    safe_range:          null,
+    optimal_g:           0,
+    sigma_ngb:           0,
+    confidence_ci:       "",
+    top_features:        ["sets.week.all", "train_status_enc", "percentage.failure.all"],
+    warnings:            [],
+    dose_response_curve: null,
+    isFallback:          true,
+  };
+}
+
+// ─── Profile field row ────────────────────────────────────────────────────────
+function ProfileRow({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="flex justify-between items-center py-2 border-b border-[#f2f3ff] last:border-0">
+      <span className="text-[10px] font-bold text-[#424754] tracking-widest uppercase">{label}</span>
+      <span className="text-[12px] font-semibold text-[#131b2e]">{value}</span>
+    </div>
+  );
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 export default function CaseStudy() {
+  const cases = testCasesData.test_cases as TestCase[];
+  const [selectedIdx, setSelectedIdx] = useState(0);
+  const [result, setResult] = useState<PredictionResult | null>(null);
+  const [isPredicting, setIsPredicting] = useState(false);
+
+  const tc = cases[selectedIdx];
+
+  async function runPrediction(testCase: TestCase) {
+    setIsPredicting(true);
+    setResult(null);
+    try {
+      const res = await fetch("http://localhost:8000/api/v1/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(testCase.request_body),
+      });
+      if (!res.ok) throw new Error("non-ok");
+      const raw: BackendResponse = await res.json();
+      if (raw.status === 500) throw new Error("500");
+      setResult(parseBackend(raw));
+    } catch {
+      setTimeout(() => setResult(buildFallback(testCase)), 500);
+    } finally {
+      setIsPredicting(false);
+    }
+  }
+
+  useEffect(() => { runPrediction(cases[0]); }, []); // eslint-disable-line
+
+  const handleSelect = (idx: number) => {
+    setSelectedIdx(idx);
+    runPrediction(cases[idx]);
+  };
+
+  // Chart data
+  const curveData = buildCurve(result?.dose_response_curve ?? null, result?.optimal_sets);
+  const yMax = result?.dose_response_curve
+    ? Math.max(...result.dose_response_curve.hedges_g) * 1.2
+    : 1.0;
+  const zoneX1 = result?.safe_range ? result.safe_range[0] : (result?.optimal_sets ?? 15) - 4;
+  const zoneX2 = result?.safe_range ? result.safe_range[1] : (result?.optimal_sets ?? 15) + 4;
+
   return (
     <div className="p-6 lg:p-10 max-w-[1400px] mx-auto w-full space-y-8">
       {/* Header */}
-      <header className="mb-8">
-        <h1 className="text-3xl lg:text-4xl font-bold text-[#0058be] tracking-tight mb-2">
-          TrainHyp Dashboard
+      <header>
+        <h1 className="text-3xl lg:text-4xl font-bold text-[#131b2e] tracking-tight mb-2">
+          Case Study
         </h1>
-        <p className="text-[13px] text-[#424754] tracking-wide uppercase">
-          Applied case study: interpreting one training profile
+        <p className="text-[13px] text-[#424754] font-medium">
+          In-depth AI analysis of individual training profiles — select a case to generate a full clinical report.
         </p>
       </header>
 
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
-        {/* Left Column */}
-        <div className="xl:col-span-4 flex flex-col gap-8">
-          {/* Subject Profile */}
-          <div className="bg-white rounded-[24px] p-8 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center gap-3 mb-8">
-                <User className="w-5 h-5 text-[#0058be]" />
-                <h3 className="text-xl font-bold text-[#131b2e] tracking-tight">Subject Profile</h3>
-              </div>
+      {/* Fallback banner */}
+      {result?.isFallback && (
+        <div className="flex items-center gap-2 bg-[#ffeed9] text-[#a04e00] px-4 py-3 rounded-xl border border-[#a04e00]/20 text-[12px] font-medium">
+          <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+          Demo mode — backend offline. Showing expected class fallback.
+        </div>
+      )}
 
-              <div className="space-y-5">
-                <div className="flex justify-between items-center py-2 border-b border-[#f2f3ff] last:border-0">
-                  <span className="text-[11px] font-bold text-[#424754] tracking-widest uppercase">Experience</span>
-                  <span className="text-sm font-semibold text-[#131b2e]">Trained</span>
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+        {/* Left: Case Selector */}
+        <div className="xl:col-span-4 flex flex-col gap-6">
+          {/* Case cards */}
+          <div className="bg-white rounded-[24px] p-6 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10">
+            <h3 className="text-[11px] font-bold text-[#424754] uppercase tracking-widest mb-4 flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-[#0058be]" /> Select Case
+            </h3>
+            <div className="flex flex-col gap-3">
+              {cases.map((c, idx) => (
+                <div
+                  key={c.case_id}
+                  onClick={() => handleSelect(idx)}
+                  className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
+                    selectedIdx === idx
+                      ? "border-[#0058be] bg-[#f2f3ff]"
+                      : "border-[#c2c6d6]/30 hover:border-[#0058be]/40 hover:bg-[#fafbff]"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-[10px] font-bold text-[#424754]">Case #{c.case_id}</span>
+                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${CLASS_BG[c.expected_class]}`}>
+                      {c.expected_class}
+                    </span>
+                  </div>
+                  <p className="text-[11px] font-semibold text-[#131b2e] leading-snug">{c.description}</p>
+                  <p className="text-[10px] text-[#727785] mt-1 leading-relaxed line-clamp-2">{c.note}</p>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-[#f2f3ff] last:border-0">
-                  <span className="text-[11px] font-bold text-[#424754] tracking-widest uppercase">Age</span>
-                  <span className="text-sm font-semibold text-[#131b2e]">28</span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-[#f2f3ff] last:border-0">
-                  <span className="text-[11px] font-bold text-[#424754] tracking-widest uppercase">Weekly Sets</span>
-                  <span className="text-sm font-semibold text-[#131b2e]">12</span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-[#f2f3ff] last:border-0">
-                  <span className="text-[11px] font-bold text-[#424754] tracking-widest uppercase">Nutrition</span>
-                  <span className="text-[11px] font-bold text-[#131b2e] bg-[#f2f3ff] px-2.5 py-1 rounded">Surplus</span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-[#f2f3ff] last:border-0">
-                  <span className="text-[11px] font-bold text-[#424754] tracking-widest uppercase">Failure</span>
-                  <span className="text-sm font-semibold text-[#131b2e]">Moderate</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-10 pt-6 border-t border-[#f2f3ff]">
-              <p className="text-[10px] font-bold text-[#424754] tracking-widest uppercase">Study Duration</p>
-              <p className="text-2xl font-bold text-[#0058be] mt-1">12 Weeks</p>
+              ))}
             </div>
           </div>
 
-          {/* Shift Analysis */}
-          <div className="bg-[#f2f3ff] rounded-[24px] p-8 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10 flex flex-col justify-center relative overflow-hidden">
-            <h3 className="text-[11px] font-bold text-[#424754] tracking-widest uppercase mb-8">Shift Analysis</h3>
-            
-            <div className="flex flex-col gap-6 relative z-10">
-              <div className="bg-white rounded-xl p-5 shadow-sm border-l-4 border-transparent ml-2 shadow-[0_2px_12px_-4px_rgba(19,27,46,0.04)] z-10">
-                <p className="text-[11px] text-[#727785] font-semibold mb-1">Current Training Pattern</p>
-                <p className="font-bold text-[#424754]">Moderate Volume</p>
-              </div>
-
-              {/* Connecting Line with Arrow */}
-              <div className="absolute left-[26px] top-12 bottom-6 w-0.5 bg-gradient-to-b from-transparent via-[#0058be]/30 to-[#0058be] z-0"></div>
-              <ArrowDown className="absolute left-4 bottom-[72px] w-5 h-5 text-[#0058be] z-20" />
-
-              <div className="bg-[#e2e7ff] rounded-xl p-5 shadow-sm border-l-4 border-[#0058be] ml-2 z-10">
-                <p className="text-[11px] text-[#0058be] mb-1 font-bold">Recommended Training Zone</p>
-                <p className="font-bold text-[#131b2e]">High Volume Threshold</p>
-              </div>
+          {/* Subject profile */}
+          <div className="bg-white rounded-[24px] p-6 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10">
+            <h3 className="text-[11px] font-bold text-[#424754] uppercase tracking-widest mb-4 flex items-center gap-2">
+              <User className="w-4 h-4 text-[#0058be]" /> Subject Profile
+            </h3>
+            <div className="space-y-0.5">
+              <ProfileRow label="Training Status" value={tc.request_body.train_status_enc === 2 ? "Trained" : "Untrained"} />
+              <ProfileRow label="Age"             value={`${tc.request_body.age} yrs`} />
+              <ProfileRow label="Sex"             value={tc.request_body.sex_male >= 0.5 ? "Male" : "Female"} />
+              <ProfileRow label="Weekly Sets"     value={`${tc.request_body.sets_week_all} sets/wk`} />
+              <ProfileRow label="Frequency"       value={`${tc.request_body.frequency_direct}×/wk`} />
+              <ProfileRow label="Sessions/Wk"     value={tc.request_body.sessions_per_week} />
+              <ProfileRow label="Rep Range"       value={`~${tc.request_body.rep_range_all} reps`} />
+              <ProfileRow label="% to Failure"    value={`${tc.request_body.percentage_failure_all}%`} />
+              <ProfileRow label="Rest (sets)"     value={`${tc.request_body.interset_rest_min_all} min`} />
+              <ProfileRow label="Program Length"  value={`${tc.request_body.weeks} wks`} />
+              <ProfileRow label="Nutrition"       value={tc.request_body.has_nutrition_control === 1 ? "Surplus" : "None"} />
+              <ProfileRow label="Muscle Group"    value={tc.request_body.upper_body === 1 ? "Upper Body" : "Lower Body"} />
             </div>
           </div>
         </div>
 
-        {/* Right Column Group */}
-        <div className="xl:col-span-8 flex flex-col gap-8">
-          {/* Top Metrics Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-             <div className="bg-white rounded-2xl p-6 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10 flex flex-col justify-between">
-              <span className="text-[10px] font-bold text-[#424754] tracking-widest uppercase mb-4">Predicted Hedges' g</span>
-              <div className="flex items-end gap-1.5 h-full">
-                <span className="text-[42px] font-semibold tracking-tighter text-[#0058be] leading-none">0.45</span>
-              </div>
+        {/* Right: Clinical Report */}
+        <div className="xl:col-span-8 flex flex-col gap-6">
+          {/* Loading state */}
+          {isPredicting && (
+            <div className="flex flex-col gap-5">
+              <SkeletonBlock h="h-[100px]" />
+              <SkeletonBlock h="h-[120px]" />
+              <SkeletonBlock h="h-[320px]" />
             </div>
+          )}
 
-            <div className="bg-white rounded-2xl p-6 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10 flex flex-col justify-between relative overflow-hidden">
-               <div className="absolute -right-6 -top-6 w-24 h-24 bg-[#d0e1fb] rounded-full opacity-30 blur-2xl"></div>
-              <span className="text-[10px] font-bold text-[#424754] tracking-widest uppercase mb-4 relative z-10">Classification</span>
-              <div className="flex items-baseline gap-1.5 h-full pt-4 relative z-10 text-[#131b2e]">
-                <span className="text-[28px] font-bold tracking-tight leading-none">HIGH</span>
-                <span className="text-[13px] text-[#0058be] font-bold">Responder</span>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-6 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10 flex flex-col justify-between">
-              <span className="text-[10px] font-bold text-[#424754] tracking-widest uppercase mb-4">Recommended Sets</span>
-              <div className="flex items-baseline gap-1.5 h-full pt-2">
-                <span className="text-[42px] font-semibold tracking-tighter text-[#0058be] leading-none">12</span>
-                <span className="text-xl text-[#727785] font-semibold mx-1 leading-none">-</span>
-                <span className="text-[32px] font-semibold tracking-tighter text-[#0058be] leading-none">16</span>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-6 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10 flex flex-col justify-between">
-              <span className="text-[10px] font-bold text-[#424754] tracking-widest uppercase mb-4">Confidence Int.</span>
-              <div className="flex items-baseline gap-1 h-full pt-2">
-                <span className="text-3xl font-bold tracking-tight text-[#131b2e] leading-none">0.35</span>
-                <span className="text-[13px] text-[#727785] font-bold mx-0.5 leading-none px-0.5">to</span>
-                <span className="text-3xl font-bold tracking-tight text-[#131b2e] leading-none">0.55</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Hypertrophy Response Curve */}
-          <div className="bg-white rounded-[24px] p-8 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10 flex flex-col flex-1 h-[400px]">
-            <div className="flex justify-between items-center mb-8">
-              <h3 className="text-xl font-bold text-[#131b2e] tracking-tight">Hypertrophy Response Curve</h3>
-              <span className="text-[11px] font-bold bg-[#f2f3ff] px-3.5 py-1.5 rounded-full text-[#727785]">Model Prediction</span>
-            </div>
-
-             <div className="flex-1 w-full relative -ml-4">
-                <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={curveData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
-                    <XAxis type="number" dataKey="x" hide domain={[0, 40]} />
-                    <YAxis type="number" hide domain={[0, 0.8]} />
-                    
-                    {/* Shadowed Reference Area */}
-                    <ReferenceArea x1={10} x2={16} ifOverflow="hidden" {...{ fill: "#f2f3ff" } as any} />
-                    
-                    {/* Confidence Interval Area */}
-                    <Area 
-                      type="monotone" 
-                      dataKey="ciHigh" 
-                      stroke="none" 
-                      fill="#d8e2ff" 
-                      fillOpacity={0.6}
-                    />
-                    <Area 
-                      type="monotone" 
-                      dataKey="ciLow" 
-                      stroke="none" 
-                      fill="#ffffff" 
-                      fillOpacity={1}
-                    />
-
-                    {/* Main Trend Line */}
-                    <Line 
-                      type="monotone" 
-                      dataKey="y" 
-                      stroke="#0058be" 
-                      strokeWidth={5} 
-                      dot={false}
-                      activeDot={false}
-                      isAnimationActive={false}
-                    />
-
-                    {/* Target Data Point */}
-                    <Scatter data={[{x: 12, y: 0.45}]} fill="#0058be">
-                       <circle r="4.5" fill="#0058be" />
-                    </Scatter>
-
-                  </ComposedChart>
-                </ResponsiveContainer>
-
-                <div className="absolute left-[34%] top-4 w-[16%] text-center text-[9px] font-bold text-[#0058be] uppercase tracking-widest z-10">
-                  Optimum Zone
+          {!isPredicting && result && (
+            <>
+              {/* Prediction Status banner */}
+              <div className="bg-gradient-to-br from-[#0058be] to-[#2170e4] rounded-[24px] p-8 text-white relative overflow-hidden">
+                <div className="absolute -right-16 -top-16 w-48 h-48 bg-white/10 rounded-full" />
+                <div className="absolute -right-4 top-12 w-24 h-24 bg-white/10 rounded-full" />
+                <div className="relative z-10">
+                  <span className="text-[10px] font-bold uppercase tracking-widest opacity-70 mb-2 block">
+                    {result.isFallback ? "Expected Classification" : "AI Prediction Result"}
+                  </span>
+                  <div className="flex items-center gap-4 mb-4">
+                    <span className={`text-[10px] font-bold px-3 py-1 rounded bg-white/20 ${
+                      result.predicted_class === tc.expected_class ? "border border-white/40" : ""
+                    }`}>
+                      {result.predicted_class} Responder
+                    </span>
+                    {result.predicted_class === tc.expected_class && (
+                      <span className="flex items-center gap-1 text-[10px] font-bold text-green-300">
+                        <CheckCircle2 className="w-3.5 h-3.5" /> Matches expected
+                      </span>
+                    )}
+                  </div>
+                  <h2 className="text-2xl font-light leading-snug tracking-tight mb-3 max-w-lg">
+                    {result.responder_insight}
+                  </h2>
+                  <p className="text-[12px] opacity-80 leading-relaxed max-w-md">
+                    {CLASS_NARRATIVE[result.predicted_class]}
+                  </p>
                 </div>
-
-                <div className="absolute left-6 top-8 bottom-8 flex flex-col justify-between text-[10px] font-bold text-[#727785] z-10 pointer-events-none">
-                  <span>0.6</span>
-                  <span>0.3</span>
-                  <span>0.0</span>
-                </div>
-            </div>
-          </div>
-          
-          {/* Explanation Panel */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-2">
-              <div className="bg-white rounded-[24px] shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10 p-8 flex flex-col">
-                 <h3 className="text-[11px] font-bold text-[#424754] tracking-widest uppercase mb-6">Prediction Determinants</h3>
-                 <div className="space-y-6">
-                    <div>
-                      <div className="flex justify-between items-end mb-2">
-                        <span className="text-[#131b2e] text-[13px] font-bold">sets.week.all</span>
-                        <span className="text-[#0058be] text-sm font-bold">42%</span>
-                      </div>
-                      <div className="w-full bg-[#f2f3ff] h-1.5 rounded-full overflow-hidden relative">
-                        <div className="absolute top-0 left-0 bg-[#0058be] h-full w-[42%] rounded-full"></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex justify-between items-end mb-2">
-                        <span className="text-[#131b2e] text-[13px] font-bold">nutrition</span>
-                        <span className="text-[#0058be] text-sm font-bold opacity-80">28%</span>
-                      </div>
-                      <div className="w-full bg-[#f2f3ff] h-1.5 rounded-full overflow-hidden relative">
-                        <div className="absolute top-0 left-0 bg-[#0058be]/80 h-full w-[28%] rounded-full"></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex justify-between items-end mb-2">
-                        <span className="text-[#131b2e] text-[13px] font-bold">train.status</span>
-                        <span className="text-[#0058be] text-sm font-bold opacity-60">21%</span>
-                      </div>
-                      <div className="w-full bg-[#f2f3ff] h-1.5 rounded-full overflow-hidden relative">
-                        <div className="absolute top-0 left-0 bg-[#0058be]/60 h-full w-[21%] rounded-full"></div>
-                      </div>
-                    </div>
-                 </div>
-                 <p className="mt-8 text-[13px] text-[#424754] leading-relaxed font-medium">
-                   The model identifies weekly set volume as the dominant driver for this specific profile. Given the subject's 'Trained' status and caloric surplus, the algorithm heavily weights the interaction between sustained mechanical tension (12+ sets) and available recovery resources, projecting an elevated hypertrophic response plateau.
-                 </p>
               </div>
 
-               <div className="bg-gradient-to-br from-[#f2f3ff] to-white rounded-[24px] shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10 p-8 flex flex-col justify-center relative overflow-hidden">
-                   <div className="absolute -right-8 -bottom-8 opacity-[0.03]">
-                      <Lightbulb className="w-48 h-48" />
-                   </div>
-                   <div className="w-12 h-12 rounded-full bg-[#0058be]/10 flex items-center justify-center text-[#0058be] mb-6 relative z-10">
-                      <Settings2 className="w-6 h-6" />
-                   </div>
-                   <h3 className="text-xl font-bold text-[#131b2e] tracking-tight mb-4 relative z-10">Clinical Takeaway</h3>
-                   <p className="text-[#131b2e] text-[15px] leading-relaxed font-medium relative z-10">
-                        For this profile, <span className="font-bold text-[#0058be]">moderate-to-high weekly volume</span> appears to maximize hypertrophy response, extending the threshold before plateau compared to untrained cohorts.
+              {/* Key Metrics Row */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {[
+                  {
+                    label: "Hedges' g",
+                    value: result.hedges_g.toFixed(3),
+                    sub: "Current ES",
+                    icon: Activity,
+                    color: "text-[#0058be]",
+                  },
+                  {
+                    label: "Optimal Volume",
+                    value: result.optimal_sets,
+                    sub: "sets / week",
+                    icon: TrendingUp,
+                    color: "text-[#22c55e]",
+                  },
+                  {
+                    label: "Confidence",
+                    value: (result.confidence * 100).toFixed(0) + "%",
+                    sub: "model certainty",
+                    icon: Shield,
+                    color: "text-[#6366f1]",
+                  },
+                  {
+                    label: "Safe Range",
+                    value: result.safe_range ? `${result.safe_range[0]}–${result.safe_range[1]}` : "N/A",
+                    sub: "sets / week",
+                    icon: CheckCircle2,
+                    color: "text-[#f59e0b]",
+                  },
+                ].map(({ label, value, sub, icon: Icon, color }) => (
+                  <div key={label} className="bg-white rounded-2xl p-5 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10">
+                    <div className="flex items-center gap-1.5 mb-3">
+                      <Icon className={`w-3.5 h-3.5 ${color}`} />
+                      <span className="text-[9px] font-bold text-[#424754] uppercase tracking-widest">{label}</span>
+                    </div>
+                    <div className={`text-2xl font-light tracking-tight ${color}`}>{value}</div>
+                    <div className="text-[9px] text-[#727785] font-medium mt-0.5">{sub}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Warnings */}
+              {result.warnings.length > 0 && (
+                <div className="bg-[#fff8e6] border border-[#e8a020]/30 rounded-xl px-5 py-4 space-y-1">
+                  {result.warnings.map((w, i) => (
+                    <div key={i} className="flex items-start gap-2 text-[11px] text-[#7a4800] font-medium">
+                      <Shield className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+                      {w}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Dose-response curve */}
+              <div className="bg-white rounded-[24px] p-8 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10">
+                <h4 className="text-[13px] font-bold text-[#131b2e] mb-1">Dose–Response Curve</h4>
+                <p className="text-[10px] text-[#727785] mb-6">
+                  Predicted Hedges' g across 1–50 sets/week for this subject profile
+                  {result.isFallback ? " (demo)" : " · EBM model · P90 cap applied"}
+                </p>
+
+                {result.dose_response_curve ? (
+                  <div className="h-[260px] bg-[#fcfdff] rounded-2xl relative overflow-hidden px-2 pt-6 pb-2">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={curveData} margin={{ top: 10, right: 20, left: 20, bottom: 10 }}>
+                        <XAxis type="number" dataKey="x" hide domain={[0, 50]} />
+                        <YAxis type="number" dataKey="y" hide domain={[0, yMax]} />
+                        <Tooltip content={<CurveTip />} />
+                        <ReferenceArea x1={zoneX1} x2={zoneX2} ifOverflow="hidden" {...{ fill: "#f2f3ff", fillOpacity: 1 } as any} />
+                        {result.optimal_sets && (
+                          <ReferenceLine x={result.optimal_sets} stroke="#0058be" strokeDasharray="4 3" strokeWidth={1.5} ifOverflow="hidden" />
+                        )}
+                        <Line
+                          type="monotone" dataKey="y" stroke="#0058be" strokeWidth={4}
+                          dot={<OptimalDot />} activeDot={{ r: 4, fill: "#0058be" }}
+                          isAnimationActive={true}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                    <div className="absolute left-[33%] top-2 text-[10px] font-bold text-[#0058be] z-10 pointer-events-none">
+                      Optimal Zone ({result.optimal_sets} sets)
+                    </div>
+                    <div className="absolute bottom-3 left-10 right-10 flex justify-between text-[10px] font-bold text-[#727785] pointer-events-none">
+                      <span>0</span><span>10</span><span>20</span><span>30</span><span>40</span><span>50</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="h-[260px] bg-[#f2f3ff] rounded-2xl flex items-center justify-center">
+                    <p className="text-[12px] text-[#727785] font-medium">
+                      Connect backend to view real dose-response curve
                     </p>
-               </div>
-          </div>
+                  </div>
+                )}
+              </div>
 
+              {/* Clinical Recommendation */}
+              <div className="bg-white rounded-[24px] p-8 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10">
+                <h4 className="text-[13px] font-bold text-[#131b2e] mb-5">Clinical Recommendation</h4>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3 bg-[#f2f3ff] rounded-xl p-4">
+                    <TrendingUp className="w-4 h-4 text-[#0058be] flex-shrink-0 mt-0.5" />
+                    <div>
+                      <div className="text-[11px] font-bold text-[#131b2e] mb-1">Volume Adjustment</div>
+                      <p className="text-[11px] text-[#424754] leading-relaxed">{result.predicted_insight}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 bg-[#f2f3ff] rounded-xl p-4">
+                    <Shield className="w-4 h-4 text-[#6366f1] flex-shrink-0 mt-0.5" />
+                    <div>
+                      <div className="text-[11px] font-bold text-[#131b2e] mb-1">Top Predictive Features</div>
+                      <div className="flex flex-wrap gap-1.5 mt-1">
+                        {result.top_features.map(f => (
+                          <span key={f} className="text-[10px] bg-[#d8e2ff] text-[#0058be] px-2 py-0.5 rounded font-bold">{f}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {result.confidence_ci && (
+                    <div className="flex items-start gap-3 bg-[#f2f3ff] rounded-xl p-4">
+                      <CheckCircle2 className="w-4 h-4 text-[#22c55e] flex-shrink-0 mt-0.5" />
+                      <div>
+                        <div className="text-[11px] font-bold text-[#131b2e] mb-1">Uncertainty Estimate (NGBoost)</div>
+                        <p className="text-[11px] text-[#424754]">
+                          95% CI: <span className="font-bold text-[#0058be]">{result.confidence_ci}</span>
+                          {" "}· σ = {result.sigma_ngb.toFixed(3)}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
-      <div className="h-4"></div>
     </div>
   );
 }
