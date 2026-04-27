@@ -3,10 +3,8 @@ import {
   CheckCircle2,
   SlidersHorizontal,
   AlertTriangle,
-  Activity,
   Shield,
   TrendingUp,
-  User,
 } from "lucide-react";
 import {
   Line,
@@ -18,8 +16,7 @@ import {
   YAxis,
   Tooltip,
 } from "recharts";
-import testCasesData from "../data/test_cases.json";
-import type { PredictionResult, TestCase, BackendResponse } from "../types";
+import type { PredictionResult, BackendResponse } from "../types";
 
 // ─── Fallback static curve (while no prediction yet) ────────────────────────
 const STATIC_CURVE = [
@@ -47,6 +44,41 @@ const SHAP_FALLBACK: ShapFeature[] = [
 // ─── Normalize feature name for comparison (dots ↔ underscores) ──────────────
 function normalizeFeatureName(name: string): string {
   return name.replace(/\./g, "_").toLowerCase();
+}
+
+// ─── Human-readable labels for model feature names ──────────────────────────────
+const FEATURE_LABELS: Record<string, string> = {
+  // dot-notation (backend)
+  "sets.week.all":          "Weekly Sets (All)",
+  "sets.week.direct":       "Direct Sets / Week",
+  "frequency.direct":       "Direct Training Frequency",
+  "sessions.per.week":      "Sessions / Week",
+  "rep.range.all":          "Rep Range (avg)",
+  "interset.rest.min.all":  "Rest Between Sets",
+  "percentage.failure.all": "% Sets to Failure",
+  "weeks":                  "Program Duration (weeks)",
+  "age":                    "Age",
+  "sex.male":               "Sex (Male / Female)",
+  // underscore-notation (fallback / alternative)
+  "sets_week_all":          "Weekly Sets (All)",
+  "sets_week_direct":       "Direct Sets / Week",
+  "frequency_direct":       "Direct Training Frequency",
+  "sessions_per_week":      "Sessions / Week",
+  "rep_range_all":          "Rep Range (avg)",
+  "interset_rest_min_all":  "Rest Between Sets",
+  "percentage_failure_all": "% Sets to Failure",
+  "train_status_enc":       "Training Status",
+  "sex_male":               "Sex (Male / Female)",
+  "upper_body":             "Muscle Group Focus",
+  "has_nutrition_control":  "Nutrition Control",
+  "reps_week_all":          "Total Reps / Week",
+};
+
+// Returns a human-readable label, falling back to a cleaned-up raw name
+function labelFor(raw: string): string {
+  return FEATURE_LABELS[raw]
+    ?? FEATURE_LABELS[raw.replace(/\./g, "_")]
+    ?? raw.replace(/[_.]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 // ─── Default user profile (editable) ─────────────────────────────────────────
@@ -208,10 +240,6 @@ function DropdownField<T extends string | number>({ label, value, options, onCha
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function VolumeOptimizer() {
-  const [activeTab, setActiveTab] = useState<"demo" | "custom">("demo");
-  const [selectedCase, setSelectedCase] = useState<TestCase>(
-    testCasesData.test_cases[0] as TestCase
-  );
   const [userProfile, setUserProfile] = useState<UserProfile>(DEFAULT_PROFILE);
   const [predictionResult, setPredictionResult] = useState<PredictionResult | null>(null);
   const [isPredicting, setIsPredicting] = useState(false);
@@ -244,13 +272,13 @@ export default function VolumeOptimizer() {
   };
 
   // ── Build fallback PredictionResult when backend offline ────────────────────
-  const buildFallback = (cls: string, desc: string, insight: string, sets: number): PredictionResult => ({
+  const buildFallback = (cls: string, sets: number): PredictionResult => ({
     predicted_class:   cls,
-    predicted_insight: insight,
-    responder_insight: `Cơ địa ${cls} Responder — ${
-      cls === "High"   ? "tăng cơ tốt ở volume cao" :
-      cls === "Medium" ? "cần volume vừa phải, nhất quán" :
-                         "tập trung kỹ thuật + nhất quán"
+    predicted_insight: "Borderline optimal",
+    responder_insight: `${cls} Responder — ${
+      cls === "High"   ? "Your profile responds well to higher training volume." :
+      cls === "Medium" ? "A moderate, consistent volume works best for you." :
+                         "Focus on technique and consistency to improve response."
     }`,
     confidence:        cls === "High" ? 0.95 : 0.89,
     hedges_g:          cls === "High" ? 0.85 : cls === "Medium" ? 0.45 : 0.20,
@@ -264,28 +292,6 @@ export default function VolumeOptimizer() {
     dose_response_curve: null,
     isFallback:        true,
   });
-
-  // ── Run prediction from Demo tab ──────────────────────────────────────────────
-  const runDemoPrediction = async (tc: TestCase) => {
-    setIsPredicting(true);
-    try {
-      const response = await fetch("http://localhost:8000/api/v1/predict", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(tc.request_body),
-      });
-      if (!response.ok) throw new Error("Backend error");
-      const raw: BackendResponse = await response.json();
-      if (raw.status === 500) throw new Error("Backend 500");
-      setPredictionResult(parseBackendResponse(raw));
-      setIsPredicting(false);
-    } catch {
-      setTimeout(() => {
-        setPredictionResult(buildFallback(tc.expected_class, tc.description, tc.expected_insight, tc.request_body.sets_week_all));
-        setIsPredicting(false);
-      }, 600);
-    }
-  };
 
   // ── Run prediction from Custom tab ────────────────────────────────────────────
   const runCustomPrediction = async () => {
@@ -321,21 +327,14 @@ export default function VolumeOptimizer() {
     } catch {
       const cls = userProfile.sets_week_all >= 25 ? "High" : userProfile.sets_week_all >= 12 ? "Medium" : "Low";
       setTimeout(() => {
-        setPredictionResult(buildFallback(cls, "Custom Profile", "Borderline optimal", userProfile.sets_week_all));
+        setPredictionResult(buildFallback(cls, userProfile.sets_week_all));
         setIsPredicting(false);
       }, 600);
     }
   };
 
-  const handleCaseSelect = (tc: TestCase) => {
-    setSelectedCase(tc);
-    setPredictionResult(null);
-    runDemoPrediction(tc);
-  };
-
-  // Auto-run on mount: fetch SHAP model-info + initial demo prediction
+  // Auto-run on mount: fetch SHAP model-info from backend
   useEffect(() => {
-    // Fetch dynamic SHAP feature importance from backend
     fetch("http://localhost:8000/api/v1/model-info")
       .then((r) => r.json())
       .then((data) => {
@@ -346,13 +345,8 @@ export default function VolumeOptimizer() {
       .catch(() => {
         // Backend offline → keep SHAP_FALLBACK (already set as default)
       });
-
-    runDemoPrediction(selectedCase);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // ── Derived display values ────────────────────────────────────────────────────
-  const activeProfile = activeTab === "demo" ? selectedCase.request_body : userProfile;
 
   // Chart: real curve from backend or static placeholder
   const curveData = useMemo(
@@ -387,68 +381,7 @@ export default function VolumeOptimizer() {
         </p>
       </header>
 
-      {/* ── Tab Switcher ── */}
-      <div className="flex gap-2 bg-[#f2f3ff] p-1.5 rounded-2xl w-fit">
-        <button
-          id="tab-demo"
-          onClick={() => setActiveTab("demo")}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-[13px] font-bold transition-all duration-200 ${
-            activeTab === "demo"
-              ? "bg-white text-[#0058be] shadow-[0_2px_8px_rgba(0,0,0,0.07)]"
-              : "text-[#424754] hover:text-[#0058be]"
-          }`}
-        >
-          <Activity className="w-4 h-4" />
-          Demo Cases
-        </button>
-        <button
-          id="tab-custom"
-          onClick={() => setActiveTab("custom")}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-[13px] font-bold transition-all duration-200 ${
-            activeTab === "custom"
-              ? "bg-white text-[#0058be] shadow-[0_2px_8px_rgba(0,0,0,0.07)]"
-              : "text-[#424754] hover:text-[#0058be]"
-          }`}
-        >
-          <User className="w-4 h-4" />
-          Custom Profile
-        </button>
-      </div>
 
-      {/* ── Demo Panel ── */}
-      {activeTab === "demo" && (
-        <div className="bg-white rounded-2xl p-6 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10 mb-2">
-          <h3 className="text-[13px] font-bold text-[#131b2e] mb-4 uppercase tracking-wider flex items-center gap-2">
-            <Activity className="w-4 h-4 text-[#0058be]" /> Demo Test Cases
-          </h3>
-          <div className="flex gap-4 overflow-x-auto pb-4">
-            {(testCasesData.test_cases as TestCase[]).map((tc) => (
-              <div
-                key={tc.case_id}
-                onClick={() => handleCaseSelect(tc)}
-                className={`flex-shrink-0 w-[280px] p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
-                  selectedCase?.case_id === tc.case_id
-                    ? "border-[#0058be] bg-[#f2f3ff] shadow-sm"
-                    : "border-[#c2c6d6]/30 hover:border-[#0058be]/40 hover:bg-[#faf8ff]"
-                }`}
-              >
-                <div className="flex justify-between items-start mb-2">
-                  <span className="text-[10px] font-bold text-[#424754] bg-white px-2 py-0.5 rounded shadow-sm border border-[#c2c6d6]/20">
-                    Case #{tc.case_id}
-                  </span>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${classBadgeStyle(tc.expected_class)}`}>
-                    {tc.expected_class}
-                  </span>
-                </div>
-                <p className="text-[12px] font-semibold text-[#131b2e] leading-snug mb-2">
-                  {tc.description}
-                </p>
-                <p className="text-[10px] text-[#727785] leading-relaxed line-clamp-2">{tc.note}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* ── Banners ── */}
       {predictionResult?.isFallback && (
@@ -477,29 +410,8 @@ export default function VolumeOptimizer() {
             <SlidersHorizontal className="w-5 h-5 text-[#727785]" />
           </div>
 
-          {activeTab === "demo" ? (
-            /* ── Demo mode: read-only summary ── */
-            <div className="space-y-4 flex-1">
-              {[
-                { label: "Training Status", value: selectedCase.request_body.train_status_enc === 2 ? "Trained" : "Untrained" },
-                { label: "Age", value: `${selectedCase.request_body.age} yrs` },
-                { label: "Weekly Sets", value: `${selectedCase.request_body.sets_week_all} sets` },
-                { label: "Reps / Week", value: `${selectedCase.request_body.reps_week_all}` },
-                { label: "Nutrition", value: selectedCase.request_body.has_nutrition_control === 1 ? "Caloric Surplus" : "None" },
-                { label: "Weeks", value: `${selectedCase.request_body.weeks} wks` },
-              ].map(({ label, value }) => (
-                <div key={label} className="flex justify-between items-center py-2 border-b border-[#f2f3ff] last:border-0">
-                  <span className="text-[11px] font-bold text-[#424754] tracking-widest uppercase">{label}</span>
-                  <span className="text-sm font-semibold text-[#131b2e]">{value}</span>
-                </div>
-              ))}
-              <p className="text-[10px] text-[#727785] font-medium mt-2 leading-relaxed">
-                Switch to <span className="text-[#0058be] font-bold">Custom Profile</span> tab to enter your own parameters.
-              </p>
-            </div>
-          ) : (
-            /* ── Custom mode: fully interactive ── */
-            <div className="space-y-6 flex-1 overflow-y-auto pr-1">
+          {/* ── Custom mode: fully interactive ── */}
+          <div className="space-y-6 flex-1 overflow-y-auto pr-1">
               <DropdownField
                 label="Training Status"
                 value={userProfile.train_status_enc}
@@ -602,13 +514,12 @@ export default function VolumeOptimizer() {
                 onChange={(v) => updateProfile("weeks", v)}
               />
             </div>
-          )}
 
           {/* Run Button */}
           <div className="pt-4 border-t border-[#f2f3ff] flex-shrink-0 space-y-4">
             <button
               id="btn-run-prediction"
-              onClick={() => activeTab === "demo" ? runDemoPrediction(selectedCase) : runCustomPrediction()}
+              onClick={runCustomPrediction}
               disabled={isPredicting}
               className={`w-full text-white font-bold text-[13px] py-3.5 rounded-xl transition-colors shadow-[0_4px_12px_rgba(0,88,190,0.2)] flex items-center justify-center gap-2 ${
                 isPredicting ? "bg-[#c2c6d6] cursor-not-allowed" : "bg-[#0058be] hover:bg-[#004395]"
@@ -658,18 +569,18 @@ export default function VolumeOptimizer() {
               !predictionResult ? "opacity-40 pointer-events-none" : "opacity-100"
             }`}
           >
-            {/* Hedges' g */}
+            {/* Muscle Growth Score */}
             <div className="bg-white rounded-2xl p-6 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10 flex flex-col justify-between">
-              <span className="text-[10px] font-bold text-[#424754] tracking-widest uppercase mb-4">Predicted Hedges' g</span>
+              <span className="text-[10px] font-bold text-[#424754] tracking-widest uppercase mb-4">Muscle Growth Score</span>
               <div>
                 <div className="flex items-end gap-1.5">
                   <span className="text-[44px] font-light tracking-tighter text-[#0058be] leading-none">
                     {predictionResult ? predictionResult.hedges_g.toFixed(2) : "--"}
                   </span>
-                  <span className="text-sm text-[#727785] font-semibold mb-1">ES</span>
+                  <span className="text-sm text-[#727785] font-semibold mb-1">score</span>
                 </div>
                 <p className="text-[10px] text-[#727785] font-medium mt-3 leading-tight">
-                  Based on current<br />clinical profile
+                  Predicted muscle growth<br />based on your profile
                 </p>
               </div>
             </div>
@@ -704,20 +615,15 @@ export default function VolumeOptimizer() {
               )}
             </div>
 
-            {/* Model Confidence */}
+            {/* Prediction Confidence */}
             <div className="bg-white rounded-2xl p-6 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10 flex flex-col justify-between">
-              <span className="text-[10px] font-bold text-[#424754] tracking-widest uppercase mb-4">Model Confidence</span>
+              <span className="text-[10px] font-bold text-[#424754] tracking-widest uppercase mb-4">Prediction Confidence</span>
               <div className="flex flex-col pb-1">
                 <span className="text-[32px] font-light text-[#131b2e] tracking-tight leading-none mb-2">
                   {predictionResult ? (predictionResult.confidence * 100).toFixed(0) + "%" : "--"}
                 </span>
                 <span className="text-[10px] text-[#727785] font-medium mt-1">
-                  Expected Class Match:{" "}
-                  {predictionResult
-                    ? activeTab === "demo"
-                      ? predictionResult?.predicted_class === selectedCase.expected_class ? "Yes" : "No"
-                      : "N/A (custom)"
-                    : "--"}
+                  How reliable this prediction is
                 </span>
               </div>
             </div>
@@ -745,15 +651,13 @@ export default function VolumeOptimizer() {
                   Recommendation:{" "}
                   <span className="font-bold text-[#0058be]">{predictionResult?.predicted_insight}</span>
                   <br />
-                  {activeTab === "demo"
-                    ? `Based on case profile: ${selectedCase.description}.`
-                    : `Based on custom profile: ${userProfile.train_status_enc === 2 ? "Trained" : "Untrained"}, ${userProfile.sets_week_all} sets/week.`}
+                  {`Based on your profile: ${userProfile.train_status_enc === 2 ? "Trained" : "Untrained"}, ${userProfile.sets_week_all} sets/week.`}
                 </p>
               </div>
-              {activeTab === "demo" && predictionResult?.predicted_class === selectedCase.expected_class && (
+              {predictionResult?.predicted_class === "High" && (
                 <div
                   className="hidden sm:flex h-16 w-16 bg-[#d8e2ff]/40 rounded-full items-center justify-center text-[#0058be]"
-                  title="Matched Expected Class"
+                  title="High Responder"
                 >
                   <CheckCircle2 className="w-7 h-7 fill-[#0058be] text-white" strokeWidth={1} />
                 </div>
@@ -794,7 +698,7 @@ export default function VolumeOptimizer() {
                         const d = payload[0].payload;
                         return (
                           <div className="bg-white text-[#131b2e] text-[11px] font-semibold px-3 py-2 rounded-lg shadow-lg border border-[#c2c6d6]/20">
-                            <div>{d.x} sets → Hedges' g: {(d.y as number).toFixed(3)}</div>
+                            <div>{d.x} sets → Growth Score: {(d.y as number).toFixed(3)}</div>
                           </div>
                         );
                       }}
@@ -829,16 +733,16 @@ export default function VolumeOptimizer() {
                   <span>0</span><span>10</span><span>20</span><span>30+</span>
                 </div>
                 <div className="absolute left-4 top-8 bottom-12 flex flex-col justify-between text-[11px] font-bold text-[#727785] z-10 pointer-events-none">
-                  <span>{yMax.toFixed(1)} ES</span>
-                  <span>{(yMax / 2).toFixed(1)} ES</span>
-                  <span className="flex flex-col -mb-4"><span>0.0 ES</span></span>
+                  <span>{yMax.toFixed(1)}</span>
+                  <span>{(yMax / 2).toFixed(1)}</span>
+                  <span className="flex flex-col -mb-4"><span>0.0</span></span>
                 </div>
               </div>
             </div>
 
-            {/* Feature Importance (SHAP) */}
+            {/* Key Factors */}
             <div className="lg:col-span-5 bg-white rounded-[24px] p-8 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10">
-              <h4 className="text-[13px] font-bold text-[#131b2e] mb-8">Feature Importance (SHAP)</h4>
+              <h4 className="text-[13px] font-bold text-[#131b2e] mb-8">Key Factors Influencing Prediction</h4>
 
               <div className="flex flex-col gap-6">
                 {shapFeatures.map((feat, idx) => {
@@ -859,7 +763,7 @@ export default function VolumeOptimizer() {
                               : "text-[#131b2e]"
                           }`}
                         >
-                          {feat.name}
+                          {labelFor(feat.name)}
                           {isTopFeature && predictionResult && !predictionResult.isFallback && (
                             <span className="ml-1 text-[9px] bg-[#d8e2ff] text-[#0058be] px-1.5 py-0.5 rounded font-bold uppercase">Key</span>
                           )}
@@ -885,12 +789,12 @@ export default function VolumeOptimizer() {
               {predictionResult && !predictionResult.isFallback && (
                 <div className="mt-8 pt-5 border-t border-[#f2f3ff]">
                   <p className="text-[10px] font-bold text-[#424754] tracking-widest uppercase mb-3">
-                    Model Top Features
+                    Top Contributing Factors
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {predictionResult.top_features.map((f) => (
                       <span key={f} className="text-[10px] bg-[#d8e2ff] text-[#0058be] px-2.5 py-1 rounded font-bold">
-                        {f}
+                        {labelFor(f)}
                       </span>
                     ))}
                   </div>

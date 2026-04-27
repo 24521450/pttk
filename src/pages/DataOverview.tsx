@@ -182,7 +182,7 @@ export default function DataOverview() {
           Dataset Overview
         </h1>
         <p className="text-[13px] text-[#424754] font-medium">
-          {DATASET_STATS.n_studies} RCTs · {DATASET_STATS.n_observations} muscle-level observations · Hedges' g hypertrophy outcomes
+          {DATASET_STATS.n_studies} RCTs · {DATASET_STATS.n_observations} muscle-level observations · Hypertrophy effect size outcomes
         </p>
       </header>
 
@@ -220,7 +220,7 @@ export default function DataOverview() {
         {[
           { icon: BookOpen,   label: "RCT Studies",        value: DATASET_STATS.n_studies,        unit: "papers",   color: "text-[#0058be]" },
           { icon: Database,   label: "Observations",       value: filtered.length,                unit: "muscle obs",color: "text-[#6366f1]" },
-          { icon: TrendingUp, label: "Mean Hedges' g",     value: mean_g,                         unit: "ES",       color: "text-[#22c55e]" },
+          { icon: TrendingUp, label: "Mean Hypertrophy Score",     value: mean_g,                         unit: "score",       color: "text-[#22c55e]" },
           { icon: Users,      label: "High Responders",    value: pct_high + "%",                 unit: "of filtered",color:"text-[#f59e0b]" },
         ].map(({ icon: Icon, label, value, unit, color }) => (
           <div key={label} className="bg-white rounded-2xl p-6 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10">
@@ -239,8 +239,8 @@ export default function DataOverview() {
         {/* Histogram */}
         {isLoading ? <SkeletonCard /> : (
           <div className="bg-white rounded-[24px] p-8 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10">
-            <h3 className="text-[13px] font-bold text-[#131b2e] mb-1">Distribution of Hedges' g</h3>
-            <p className="text-[10px] text-[#727785] mb-6">Hypertrophy effect size across all filtered observations</p>
+            <h3 className="text-[13px] font-bold text-[#131b2e] mb-1">Distribution of Hypertrophy Scores</h3>
+            <p className="text-[10px] text-[#727785] mb-6">Muscle growth effect size across all filtered observations</p>
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={histBins} barCategoryGap="20%">
                 <XAxis dataKey="label" tick={{ fontSize: 10, fill: "#727785", fontWeight: 600 }} axisLine={false} tickLine={false} />
@@ -267,7 +267,7 @@ export default function DataOverview() {
         {/* Boxplot */}
         {isLoading ? <SkeletonCard /> : (
           <div className="bg-white rounded-[24px] p-8 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10">
-            <h3 className="text-[13px] font-bold text-[#131b2e] mb-1">Hedges' g by Responder Class</h3>
+            <h3 className="text-[13px] font-bold text-[#131b2e] mb-1">Muscle Growth Score by Responder Class</h3>
             <p className="text-[10px] text-[#727785] mb-6">P5–P25–P50–P75–P95 per class (filtered data)</p>
             <BoxPlotSVG stats={boxStats} isLoading={false} />
 
@@ -277,7 +277,7 @@ export default function DataOverview() {
                 <div key={s.label} className="bg-[#f8f9ff] rounded-xl p-3 text-center">
                   <div className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: s.color }}>{s.label}</div>
                   <div className="text-[13px] font-bold text-[#131b2e]">{s.median.toFixed(2)}</div>
-                  <div className="text-[9px] text-[#727785]">median ES</div>
+                  <div className="text-[9px] text-[#727785]">median score</div>
                   <div className="text-[9px] text-[#727785]">IQR [{s.q1.toFixed(2)}–{s.q3.toFixed(2)}]</div>
                 </div>
               ))}
@@ -320,7 +320,7 @@ export default function DataOverview() {
             { label: "Trained Athletes",   value: DATASET_STATS.pct_trained + "%" },
             { label: "Untrained Subjects", value: DATASET_STATS.pct_untrained + "%" },
             { label: "Unique Studies",     value: DATASET_STATS.n_studies },
-            { label: "Dataset Mean ES",    value: DATASET_STATS.mean_g },
+            { label: "Dataset Mean Score",    value: DATASET_STATS.mean_g },
           ].map(({ label, value }) => (
             <div key={label} className="text-center">
               <div className="text-xl font-light text-[#0058be]">{value}</div>

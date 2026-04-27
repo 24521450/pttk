@@ -2,12 +2,12 @@
 main_fastapi.py  —  FastAPI Server for TrainHyp AI Engine
 STAT3013 | 2026
 
-Cài đặt:
+Setup:
     pip install -r requirements.txt
 
-Chạy:
+Run:
     uvicorn main_fastapi:app --host 0.0.0.0 --port 8000 --reload
-    hoặc: double-click start_backend.bat
+    or: double-click start_backend.bat
 
 Test:
     curl http://localhost:8000/api/v1/health
@@ -16,12 +16,12 @@ Test:
          -d '{"sets_week_all": 18, "age": 25, "sex_male": 1.0, "train_status_enc": 2}'
 
 Schema notes:
-    sex_male         : 0.0 (nữ) hoặc 1.0 (nam) cho user cá nhân.
-                       Training data là study-level proportion [0.27–1.0].
-    train_status_enc : 0 (untrained) hoặc 2 (trained). Không dùng 1.
-    Missing fields   : Được fill tự động bằng train_medians (không phải 0).
-    reps_week_all    : Được chấp nhận nhưng không dùng bởi model (13-feature schema).
-    failure_binary   : Được chấp nhận nhưng không dùng bởi model.
+    sex_male         : 0.0 (female) or 1.0 (male) for individual users.
+                       Training data is study-level proportion [0.27–1.0].
+    train_status_enc : 0 (untrained) or 2 (trained). Do not use 1.
+    Missing fields   : Auto-filled using training data medians (not 0).
+    reps_week_all    : Accepted but not used by model (13-feature schema).
+    failure_binary   : Accepted but not used by model.
 """
 
 from fastapi import FastAPI, HTTPException
@@ -61,33 +61,33 @@ class UserInput(BaseModel):
 
     # Training variables
     sets_week_all:          float = Field(..., ge=0, le=60,
-                                          description="Tổng sets/tuần [required]")
+                                          description="Total sets/week [required]")
     sets_week_direct:       float = Field(None, ge=0, le=60,
-                                          description="Sets direct/tuần")
+                                          description="Direct sets/week")
     frequency_direct:       float = Field(None, ge=0, le=7,
-                                          description="Tần suất direct/tuần")
+                                          description="Direct training frequency/week")
     sessions_per_week:      float = Field(None, ge=0, le=14,
-                                          description="Số buổi/tuần")
+                                          description="Training sessions/week")
     rep_range_all:          float = Field(None, ge=1, le=30,
-                                          description="Rep range trung bình")
+                                          description="Average rep range")
     interset_rest_min_all:  float = Field(None, ge=0.5, le=10,
-                                          description="Nghỉ giữa sets (phút)")
+                                          description="Inter-set rest (minutes)")
     percentage_failure_all: float = Field(None, ge=0, le=100,
-                                          description="% sets đến failure")
+                                          description="% sets taken to failure")
     weeks:                  float = Field(None, ge=1, le=52,
-                                          description="Số tuần can thiệp")
+                                          description="Intervention duration (weeks)")
 
     # Subject variables
     age:                    float = Field(None, ge=15, le=70,
-                                          description="Tuổi")
+                                          description="Age")
     sex_male:               float = Field(None, ge=0, le=1,
-                                          description="0=nữ, 1=nam")
+                                          description="0=female, 1=male")
     train_status_enc:       int   = Field(None,
                                           description="0=untrained, 2=trained")
     upper_body:             int   = Field(None, ge=0, le=1,
                                           description="1=upper, 0=lower")
     has_nutrition_control:  int   = Field(None, ge=0, le=1,
-                                          description="1=có KS dinh dưỡng")
+                                          description="1=caloric surplus / nutrition control")
 
     # ── Extra fields sent by frontend test_cases (ignored by 13-feature model) ──
     reps_week_all:          float = Field(None, ge=0,
@@ -116,9 +116,9 @@ def health():
 @app.get("/api/v1/model-info", tags=["info"])
 def model_info():
     """
-    Trả về thông tin model: feature importance (SHAP), feature names,
-    class mapping, P90 cap, uncertainty threshold.
-    Frontend dùng endpoint này để hiển thị SHAP chart dynamic.
+    Returns model metadata: feature importance (SHAP), feature names,
+    class mapping, P90 cap, and uncertainty threshold.
+    Used by the frontend to render the dynamic feature importance chart.
     """
     feature_importance = ai_engine.meta.get("feature_importance", {})
 
@@ -154,7 +154,7 @@ def model_info():
 @app.post("/api/v1/predict", tags=["prediction"])
 def predict(user: UserInput):
     """
-    Phân tích và gợi ý optimal training volume.
+    Analyse and recommend the optimal training volume for muscle hypertrophy.
 
     Only `sets_week_all` is required.
     All other fields default to training data medians if not provided.

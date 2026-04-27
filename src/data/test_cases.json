@@ -7,7 +7,7 @@
       "description": "Trained male, moderate volume, upper body",
       "expected_class": "Medium",
       "expected_insight": "Borderline undertrained / optimal",
-      "note": "Profile phổ biến nhất trong data — trained male, ~18 sets/week, 1x/week frequency",
+      "note": "Most common profile in the dataset — trained male, ~18 sets/week, 1 session/week direct frequency",
       "request_body": {
         "sets_week_all": 18.0,
         "sets_week_direct": 4.0,
@@ -31,7 +31,7 @@
       "description": "High frequency, high volume trained — High responder",
       "expected_class": "High",
       "expected_insight": "Optimal or overtraining risk",
-      "note": "Frequency cao (4x), volume cao (32 sets), REST ngắn — pattern của High class",
+      "note": "High training frequency (4x/week), high weekly volume (32 sets), short inter-set rest — characteristic pattern of the High responder class",
       "request_body": {
         "sets_week_all": 32.0,
         "sets_week_direct": 16.0,
@@ -55,7 +55,7 @@
       "description": "Untrained, very low volume — clearly undertraining",
       "expected_class": "Low",
       "expected_insight": "Undertraining",
-      "note": "Untrained (status=0), chỉ 3 sets/week — Low class, nên trigger warning undertraining",
+      "note": "Untrained subject (status=0), only 3 sets/week — Low responder class; should trigger an undertraining warning",
       "request_body": {
         "sets_week_all": 3.0,
         "sets_week_direct": 3.0,
@@ -79,7 +79,7 @@
       "description": "Long program, untrained, moderate volume — Medium",
       "expected_class": "Medium",
       "expected_insight": "Optimal or slight undertrain",
-      "note": "Chương trình dài (24 tuần), untrained ban đầu — hedges_g thực tế 0.79 (Medium)",
+      "note": "Extended program duration (24 weeks), initially untrained — observed hypertrophy score (Hedges' g) of 0.79, classified as Medium responder",
       "request_body": {
         "sets_week_all": 18.0,
         "sets_week_direct": 9.0,
@@ -103,7 +103,7 @@
       "description": "Very high volume — potential overtraining + High class",
       "expected_class": "High",
       "expected_insight": "Overtraining risk OR optimal peak",
-      "note": "45 sets/week nằm ở edge của training data (max=48) — nên trigger GPR uncertainty cao. Rest dài (1.5 min) bù đắp cho volume lớn",
+      "note": "45 sets/week sits at the edge of the training distribution (dataset max = 48) — should trigger elevated GPR uncertainty. Longer inter-set rest (1.5 min) partially compensates for extreme weekly volume",
       "request_body": {
         "sets_week_all": 45.0,
         "sets_week_direct": 45.0,

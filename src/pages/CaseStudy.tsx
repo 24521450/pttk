@@ -86,7 +86,7 @@ function buildFallback(tc: TestCase): PredictionResult {
   return {
     predicted_class:     cls,
     predicted_insight:   tc.expected_insight,
-    responder_insight:   `Cơ địa ${cls} Responder`,
+    responder_insight:   `${cls} Responder Profile`,
     confidence:          cls === "High" ? 0.95 : 0.87,
     hedges_g:            cls === "High" ? 0.85 : cls === "Medium" ? 0.45 : 0.15,
     optimal_sets:        Math.round(tc.request_body.sets_week_all * 0.85),

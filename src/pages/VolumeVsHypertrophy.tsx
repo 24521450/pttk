@@ -61,7 +61,7 @@ function ScatterTip({ active, payload }: any) {
   return (
     <div className="bg-white text-[11px] font-semibold px-3 py-2 rounded-lg shadow-lg border border-[#c2c6d6]/20">
       <div>Sets/week: <span className="text-[#0058be]">{d.sets}</span></div>
-      <div>Hedges' g: <span className="text-[#0058be]">{d.g}</span></div>
+      <div>Growth Score: <span className="text-[#0058be]">{d.g}</span></div>
       <div>Class: <span style={{ color: CLS_COLOR[d.cls] }}>{d.cls}</span></div>
       <div>Status: {d.trained ? "Trained" : "Untrained"}</div>
     </div>
@@ -109,7 +109,7 @@ export default function VolumeVsHypertrophy() {
           Volume vs Hypertrophy
         </h1>
         <p className="text-[13px] text-[#424754] font-medium">
-          Relationship between weekly training volume and muscle hypertrophy effect size (Hedges' g)
+          Relationship between weekly training volume and muscle growth (hypertrophy score)
         </p>
       </header>
 
@@ -117,8 +117,8 @@ export default function VolumeVsHypertrophy() {
       <div className="flex flex-wrap gap-3">
         {[
           { label: "Total observations", value: filtered.length },
-          { label: "Pearson r (sets vs g)", value: pearsonR > 0 ? `+${pearsonR}` : String(pearsonR) },
-          { label: "Overall mean ES", value: DATASET_STATS.mean_g },
+          { label: "Pearson r (sets vs score)", value: pearsonR > 0 ? `+${pearsonR}` : String(pearsonR) },
+          { label: "Overall mean score", value: DATASET_STATS.mean_g },
           { label: "High responders", value: DATASET_STATS.pct_high + "%" },
         ].map(({ label, value }) => (
           <div key={label} className="bg-white rounded-xl px-4 py-2.5 shadow-[0_2px_12px_rgba(19,27,46,0.06)] border border-[#c2c6d6]/10 flex items-center gap-3">
@@ -153,7 +153,7 @@ export default function VolumeVsHypertrophy() {
         <div className="bg-white rounded-[24px] p-8 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10">
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h3 className="text-[13px] font-bold text-[#131b2e] mb-1">Sets/Week vs Hedges' g (Scatter)</h3>
+              <h3 className="text-[13px] font-bold text-[#131b2e] mb-1">Sets/Week vs Muscle Growth Score (Scatter)</h3>
               <p className="text-[10px] text-[#727785]">
                 {filtered.length} observations · Colour = Responder Class · r = {pearsonR > 0 ? "+" : ""}{pearsonR}
               </p>
@@ -204,7 +204,7 @@ export default function VolumeVsHypertrophy() {
         <div className="bg-white rounded-[24px] p-8 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.04)] border border-[#c2c6d6]/10">
           <div className="flex items-center gap-2 mb-6">
             <h3 className="text-[13px] font-bold text-[#131b2e]">
-              Feature–Outcome Correlation (Pearson r with Hedges' g)
+              Feature–Outcome Correlation (Pearson r with Hypertrophy Score)
             </h3>
             <div className="group relative">
               <Info className="w-4 h-4 text-[#c2c6d6] cursor-help" />
@@ -269,7 +269,7 @@ export default function VolumeVsHypertrophy() {
               <div className="text-3xl font-light" style={{ color }}>
                 {avg !== null ? avg : "—"}
               </div>
-              <div className="text-[10px] text-[#727785] font-medium mt-1">mean Hedges' g</div>
+              <div className="text-[10px] text-[#727785] font-medium mt-1">mean growth score</div>
               <div className="text-[9px] text-[#c2c6d6] mt-0.5">{range}</div>
             </div>
           );

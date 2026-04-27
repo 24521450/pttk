@@ -37,14 +37,14 @@ warnings.filterwarnings('ignore')
 
 class TrainHypAI:
     """
-    AI Engine tích hợp cho TrainHyp.
-    Load tất cả models một lần, predict nhiều lần (stateless).
+    Integrated AI Engine for TrainHyp.
+    Loads all models once at startup, runs predictions on-demand (stateless).
     """
 
     def __init__(self, model_dir: str = './backend_models/'):
         """
-        Load toàn bộ models vào RAM.
-        Gọi hàm này 1 lần khi FastAPI server khởi động.
+        Load all models into RAM.
+        Call once when the FastAPI server starts.
         """
         try:
             self.meta         = joblib.load(f'{model_dir}/meta.pkl')
@@ -69,7 +69,7 @@ class TrainHypAI:
 
         Returns:
             X_proc : (n, 13) — cho EBM, NGBoost, CatBoost
-            X_gpr  : (n, 10) — chỉ continuous, cho GPR
+            X_gpr  : (n, 10) — continuous features only, for GPR
         """
         cont_cols = self.meta['continuous_cols']
         bin_cols  = self.meta['categorical_cols']
@@ -82,8 +82,8 @@ class TrainHypAI:
 
     def _fill_missing(self, df_input: pd.DataFrame) -> pd.DataFrame:
         """
-        Điền giá trị thiếu bằng TRAIN MEDIANS (không dùng 0 — 0 là giá trị bất hợp lý).
-        age=0 hoặc sets=0 sẽ phá hoàn toàn kết quả prediction.
+        Fill missing values using TRAIN MEDIANS (not 0 — zero is physiologically invalid).
+        age=0 or sets=0 would completely invalidate prediction results.
         """
         train_medians = self.meta.get('train_medians', {})
         for col in self.meta['feature_names']:
@@ -96,14 +96,14 @@ class TrainHypAI:
         """4 safety rules."""
         warnings_list = []
 
-        # Rule 1: Feature ngoài training range (extrapolation)
+        # Rule 1: Feature outside training range (extrapolation)
         for feat, (fmin, fmax) in self.meta['feature_ranges'].items():
             if feat in df_input.columns:
                 val = float(df_input[feat].iloc[0])
                 if val < fmin or val > fmax:
                     warnings_list.append(
-                        f"⚠️  {feat}={val:.2f} ngoài training range "
-                        f"[{fmin:.2f},{fmax:.2f}] — kết quả là extrapolation"
+                        f"⚠️  {feat}={val:.2f} is outside the training range "
+                        f"[{fmin:.2f},{fmax:.2f}] — result is an extrapolation"
                     )
 
         # Rule 2: NGBoost uncertainty cao
@@ -126,11 +126,11 @@ class TrainHypAI:
 
         if current_sets < min_sets:
             warnings_list.append(
-                f"⚠️  {current_sets} sets/tuần quá thấp (<{min_sets}) — junk volume"
+                f"⚠️  {current_sets} sets/week is too low (<{min_sets}) — junk volume territory"
             )
         elif current_sets > max_sets:
             warnings_list.append(
-                f"⚠️  {current_sets} sets/tuần rất cao (>{max_sets}) — overtraining risk"
+                f"⚠️  {current_sets} sets/week is very high (>{max_sets}) — overtraining risk"
             )
 
         return warnings_list
@@ -141,9 +141,9 @@ class TrainHypAI:
         Main API: payload dict → full analysis JSON.
 
         Args:
-            payload: dict với keys = feature_names trong meta.pkl.
-                     Ví dụ: {'sets.week.all': 18, 'age': 25, ...}
-                     Missing keys → filled with train_medians (không phải 0).
+            payload: dict with keys = feature_names from meta.pkl.
+                     Example: {'sets.week.all': 18, 'age': 25, ...}
+                     Missing keys -> filled with train_medians (not 0).
         """
         try:
             feature_cols = self.meta['feature_names']
@@ -206,11 +206,11 @@ class TrainHypAI:
             # 9. Interpret status
             ratio = current_sets / max(optimal_sets, 1)
             if ratio < 0.80:
-                insight = f"Undertraining — tăng lên {optimal_sets} sets/tuần"
+                insight = f"Undertraining — increase to {optimal_sets} sets/week"
             elif ratio > 1.20:
-                insight = "Overtraining risk — cân nhắc giảm volume"
+                insight = "Overtraining risk — consider reducing weekly volume"
             else:
-                insight = "Optimal zone — tiếp tục duy trì"
+                insight = "Optimal zone — maintain current programming"
 
             confidence = (
                 "High" if sigma_ngb < self.meta['uncertainty_threshold'] else "Low"
@@ -230,11 +230,11 @@ class TrainHypAI:
                 "data": {
                     "responder_class":   class_name,
                     "responder_insight": (
-                        f"Cơ địa {class_name} Responder — "
+                        f"{class_name} Responder Profile — "
                         + {
-                            "High":   "tăng cơ tốt ở volume cao",
-                            "Medium": "cần volume vừa phải, nhất quán",
-                            "Low":    "tập trung kỹ thuật + nhất quán",
+                            "High":   "responds well to higher training volumes",
+                            "Medium": "benefits from moderate, consistent volume",
+                            "Low":    "focus on technique and training consistency",
                         }[class_name]
                     ),
                     "current_status": {
