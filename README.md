@@ -24,7 +24,7 @@
 
 | Service | URL |
 |---|---|
-| Frontend App | http://localhost:5173 |
+| Frontend App | http://localhost:3000 |
 | Backend API | http://localhost:8000 |
 | API Docs (Swagger) | http://localhost:8000/docs |
 
@@ -77,7 +77,7 @@ pttk/
 
 | Layer | Technology |
 |---|---|
-| Frontend | React 18 · Vite · TypeScript · Tailwind CSS v4 |
+| Frontend | React **19** · Vite · TypeScript · Tailwind CSS v4 |
 | Charts | Recharts |
 | Backend | FastAPI (Python 3.10+) |
 | ML Models | EBM-GAM · NGBoost · CatBoost · GPR |

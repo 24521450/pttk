@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   ScatterChart, Scatter, XAxis, YAxis, Tooltip,
   ResponsiveContainer, ReferenceLine, CartesianGrid, Cell,
@@ -71,7 +71,13 @@ function ScatterTip({ active, payload }: any) {
 export default function VolumeVsHypertrophy() {
   const [clsFilter, setClsFilter] = useState<"all" | "High" | "Medium" | "Low">("all");
   const [trainFilter, setTrainFilter] = useState<"all" | "trained" | "untrained">("all");
-  const [isLoading] = useState(false); // synchronous data
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate an 800 ms load — gives visual feedback even with synchronous data
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   const filtered = useMemo(() => RAW_POINTS.filter(p => {
     if (clsFilter !== "all" && p.cls !== clsFilter) return false;

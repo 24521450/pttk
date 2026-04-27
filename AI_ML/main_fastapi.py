@@ -26,7 +26,7 @@ Schema notes:
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from ai_engine import TrainHypAI
 
 app = FastAPI(
@@ -83,7 +83,7 @@ class UserInput(BaseModel):
     sex_male:               float = Field(None, ge=0, le=1,
                                           description="0=female, 1=male")
     train_status_enc:       int   = Field(None,
-                                          description="0=untrained, 2=trained")
+                                          description="0=untrained, 2=trained (no other values accepted)")
     upper_body:             int   = Field(None, ge=0, le=1,
                                           description="1=upper, 0=lower")
     has_nutrition_control:  int   = Field(None, ge=0, le=1,
@@ -94,6 +94,15 @@ class UserInput(BaseModel):
                                           description="Total reps/week [frontend compat, not used by model]")
     failure_binary:         int   = Field(None, ge=0, le=1,
                                           description="Binary failure flag [frontend compat, not used by model]")
+
+    @field_validator('train_status_enc')
+    @classmethod
+    def validate_train_status(cls, v: int | None) -> int | None:
+        if v is not None and v not in (0, 2):
+            raise ValueError(
+                f"train_status_enc must be 0 (untrained) or 2 (trained), got {v}"
+            )
+        return v
 
 
 @app.get("/", tags=["info"])

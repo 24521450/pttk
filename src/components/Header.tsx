@@ -1,13 +1,6 @@
-export default function Header() {
-  return (
-    <>
-      {/* Mobile Header — title only */}
-      <header className="md:hidden flex items-center w-full px-6 h-16 bg-[#f2f3ff] fixed top-0 z-50 shadow-sm">
-        <div className="text-xl font-bold tracking-tight text-[#0058be]">TrainHyp</div>
-      </header>
-
-      {/* Desktop Header */}
-      <header className="hidden md:flex items-center w-full px-6 lg:px-10 h-20 bg-white sticky top-0 z-30 border-b border-[#f2f3ff]" />
-    </>
-  );
-}
+/**
+ * Header.tsx — removed per code review #12.
+ * The desktop header was an empty white bar with no content.
+ * The mobile header duplicated the app name already in the sidebar.
+ * Layout is now handled entirely by Sidebar + page components.
+ */

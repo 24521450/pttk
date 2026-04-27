@@ -1,10 +1,7 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 import { Database, FileText, Gauge, LineChart, Microscope, Wifi, WifiOff } from "lucide-react";
-
-interface SidebarProps {
-  activePage: string;
-  setActivePage: (page: string) => void;
-}
+import { API_BASE } from "../config";
 
 type HealthStatus = "checking" | "online" | "offline";
 
@@ -15,7 +12,7 @@ function useBackendHealth(): HealthStatus {
   useEffect(() => {
     const check = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/v1/health", {
+        const res = await fetch(`${API_BASE}/api/v1/health`, {
           signal: AbortSignal.timeout(3000),
         });
         setStatus(res.ok ? "online" : "offline");
@@ -62,7 +59,7 @@ function StatusBadge({ status }: { status: HealthStatus }) {
       ) : status === "offline" ? (
         <WifiOff className={`w-3.5 h-3.5 flex-shrink-0 ${cfg.text}`} />
       ) : (
-        <span className={`w-3.5 h-3.5 flex-shrink-0 flex items-center justify-center`}>
+        <span className="w-3.5 h-3.5 flex-shrink-0 flex items-center justify-center">
           <span className={`w-2 h-2 rounded-full ${cfg.dot} inline-block`} />
         </span>
       )}
@@ -74,11 +71,23 @@ function StatusBadge({ status }: { status: HealthStatus }) {
   );
 }
 
-export default function Sidebar({ activePage, setActivePage }: SidebarProps) {
+// ─── Shared NavLink class helper ───────────────────────────────────────────────
+const navClass = ({ isActive }: { isActive: boolean }) =>
+  `flex w-full items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
+    isActive
+      ? "bg-[#0058be]/10 text-[#0058be] font-semibold"
+      : "text-[#424754] hover:bg-[#eaedff] hover:text-[#0058be]"
+  }`;
+
+// ─── Sidebar ─────────────────────────────────────────────────────────────────
+export default function Sidebar() {
   const health = useBackendHealth();
 
   return (
-    <nav className="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 bg-[#f2f3ff] pt-6 px-4 pb-4 space-y-2 z-40">
+    <nav
+      aria-label="Main navigation"
+      className="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 bg-[#f2f3ff] pt-6 px-4 pb-4 space-y-2 z-40"
+    >
       <div className="flex items-center gap-3 mb-10 px-4">
         <div>
           <h1 className="text-xl font-bold tracking-tight text-[#0058be]">
@@ -90,51 +99,42 @@ export default function Sidebar({ activePage, setActivePage }: SidebarProps) {
         </div>
       </div>
 
-      <div className="flex-1 space-y-1">
-        <button
-          onClick={() => setActivePage("overview")}
-          className={`flex w-full items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
-            activePage === "overview"
-              ? "bg-[#0058be]/10 text-[#0058be] font-semibold"
-              : "text-[#424754] hover:bg-[#eaedff] hover:text-[#0058be]"
-          }`}
-        >
-          <Database className={`w-5 h-5 ${activePage === "overview" ? "fill-[#0058be]/20" : ""}`} />
-          <span className="text-sm">Data Overview</span>
-        </button>
-        <button
-          onClick={() => setActivePage("volume")}
-          className={`flex w-full items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
-            activePage === "volume"
-              ? "bg-[#0058be]/10 text-[#0058be] font-semibold"
-              : "text-[#424754] hover:bg-[#eaedff] hover:text-[#0058be]"
-          }`}
-        >
-          <LineChart className="w-5 h-5" />
-          <span className="text-sm">Volume vs Hypertrophy</span>
-        </button>
-        <button
-          onClick={() => setActivePage("optimizer")}
-          className={`flex w-full items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
-            activePage === "optimizer"
-              ? "bg-[#0058be]/10 text-[#0058be] font-semibold"
-              : "text-[#424754] hover:bg-[#eaedff] hover:text-[#0058be]"
-          }`}
-        >
-          <Gauge className={`w-5 h-5 ${activePage === "optimizer" ? "fill-[#0058be]/20" : ""}`} />
-          <span className="text-sm">Volume Optimizer</span>
-        </button>
-        <button
-          onClick={() => setActivePage("study")}
-           className={`flex w-full items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
-            activePage === "study"
-              ? "bg-[#0058be]/10 text-[#0058be] font-semibold"
-              : "text-[#424754] hover:bg-[#eaedff] hover:text-[#0058be]"
-          }`}
-        >
-          <Microscope className={`w-5 h-5 ${activePage === "study" ? "fill-[#0058be]/20" : ""}`} />
-          <span className="text-sm">Case Study</span>
-        </button>
+      <div className="flex-1 space-y-1" role="list">
+        <NavLink to="/overview" className={navClass} end role="listitem">
+          {({ isActive }) => (
+            <>
+              <Database className={`w-5 h-5 ${isActive ? "fill-[#0058be]/20" : ""}`} />
+              <span className="text-sm">Data Overview</span>
+            </>
+          )}
+        </NavLink>
+
+        <NavLink to="/volume" className={navClass} role="listitem">
+          {({ isActive }) => (
+            <>
+              <LineChart className={`w-5 h-5 ${isActive ? "fill-[#0058be]/20" : ""}`} />
+              <span className="text-sm">Volume vs Hypertrophy</span>
+            </>
+          )}
+        </NavLink>
+
+        <NavLink to="/optimizer" className={navClass} role="listitem">
+          {({ isActive }) => (
+            <>
+              <Gauge className={`w-5 h-5 ${isActive ? "fill-[#0058be]/20" : ""}`} />
+              <span className="text-sm">Volume Optimizer</span>
+            </>
+          )}
+        </NavLink>
+
+        <NavLink to="/case-study" className={navClass} role="listitem">
+          {({ isActive }) => (
+            <>
+              <Microscope className={`w-5 h-5 ${isActive ? "fill-[#0058be]/20" : ""}`} />
+              <span className="text-sm">Case Study</span>
+            </>
+          )}
+        </NavLink>
       </div>
 
       {/* Backend health status */}

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
@@ -99,7 +99,13 @@ function BoxPlotSVG({ stats, isLoading }: { stats: BoxStats[]; isLoading: boolea
 export default function DataOverview() {
   const [trainFilter, setTrainFilter] = useState<"all" | "trained" | "untrained">("all");
   const [nutritionFilter, setNutritionFilter] = useState<"all" | "yes" | "no">("all");
-  const [isLoading] = useState(false); // data is synchronous from studyData.ts
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate an 800 ms load — gives visual feedback even with synchronous data
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Apply filters
   const filtered: StudyPoint[] = useMemo(() => {

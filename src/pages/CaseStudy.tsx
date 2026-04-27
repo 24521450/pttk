@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import testCasesData from "../data/test_cases.json";
 import type { TestCase, PredictionResult, BackendResponse } from "../types";
+import { API_BASE } from "../config";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const CLASS_COLOR: Record<string, string> = {
@@ -124,7 +125,7 @@ export default function CaseStudy() {
     setIsPredicting(true);
     setResult(null);
     try {
-      const res = await fetch("http://localhost:8000/api/v1/predict", {
+      const res = await fetch(`${API_BASE}/api/v1/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(testCase.request_body),

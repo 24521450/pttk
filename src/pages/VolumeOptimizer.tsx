@@ -17,6 +17,7 @@ import {
   Tooltip,
 } from "recharts";
 import type { PredictionResult, BackendResponse } from "../types";
+import { API_BASE } from "../config";
 
 // ─── Fallback static curve (while no prediction yet) ────────────────────────
 const STATIC_CURVE = [
@@ -178,6 +179,7 @@ function SliderField({ label, unit, value, min, max, step = 1, onChange, display
         />
         <input
           type="range"
+          id={`slider-${label}`}
           min={min}
           max={max}
           step={step}
@@ -185,6 +187,11 @@ function SliderField({ label, unit, value, min, max, step = 1, onChange, display
           onChange={(e) => onChange(Number(e.target.value))}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
           style={{ WebkitAppearance: "none" }}
+          aria-label={unit ? `${label} in ${unit}` : label}
+          aria-valuemin={min}
+          aria-valuemax={max}
+          aria-valuenow={value}
+          aria-valuetext={displayValue ?? String(value)}
         />
         {/* Thumb */}
         <div
@@ -218,10 +225,10 @@ function DropdownField<T extends string | number>({ label, value, options, onCha
           value={String(value)}
           onChange={(e) => {
             const raw = e.target.value;
-            // try parse as number; if NaN, pass as string
             const num = Number(raw);
             onChange((isNaN(num) ? raw : num) as T);
           }}
+          aria-label={label}
           className="w-full h-12 bg-[#f2f3ff] border border-transparent rounded-xl px-4 pr-10 text-sm text-[#131b2e] font-semibold hover:bg-[#eaedff] focus:outline-none focus:ring-2 focus:ring-[#0058be]/30 transition-colors cursor-pointer appearance-none"
         >
           {options.map(o => (
@@ -314,7 +321,7 @@ export default function VolumeOptimizer() {
       has_nutrition_control:  userProfile.has_nutrition_control,
     };
     try {
-      const response = await fetch("http://localhost:8000/api/v1/predict", {
+      const response = await fetch(`${API_BASE}/api/v1/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -335,7 +342,7 @@ export default function VolumeOptimizer() {
 
   // Auto-run on mount: fetch SHAP model-info from backend
   useEffect(() => {
-    fetch("http://localhost:8000/api/v1/model-info")
+    fetch(`${API_BASE}/api/v1/model-info`)
       .then((r) => r.json())
       .then((data) => {
         if (Array.isArray(data?.feature_importance) && data.feature_importance.length > 0) {

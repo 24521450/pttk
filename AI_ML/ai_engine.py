@@ -27,12 +27,20 @@
 ╚══════════════════════════════════════════════════════════════╝
 """
 
+import logging
 import pandas as pd
 import numpy as np
 import joblib
 import traceback
 import warnings
-warnings.filterwarnings('ignore')
+
+# Suppress only known harmless warnings from third-party libraries
+warnings.filterwarnings('ignore', category=FutureWarning)
+warnings.filterwarnings('ignore', category=UserWarning, module='catboost')
+warnings.filterwarnings('ignore', category=UserWarning, module='ngboost')
+warnings.filterwarnings('ignore', message='.*ConvergenceWarning.*')
+
+logger = logging.getLogger(__name__)
 
 
 class TrainHypAI:
@@ -55,7 +63,7 @@ class TrainHypAI:
             self.ngb_model    = joblib.load(f'{model_dir}/ngb_model.pkl')
             self.clf_model    = joblib.load(f'{model_dir}/catboost_clf.pkl')
             self.gpr_model    = joblib.load(f'{model_dir}/gpr_model.pkl')
-            print("🚀 [TrainHyp AI] All models loaded successfully.")
+            logger.info("TrainHyp AI: All models loaded successfully.")
         except FileNotFoundError as e:
             raise FileNotFoundError(
                 f"❌ Model file not found: {e}\n"
@@ -68,7 +76,7 @@ class TrainHypAI:
         DataFrame → numpy arrays.
 
         Returns:
-            X_proc : (n, 13) — cho EBM, NGBoost, CatBoost
+            X_proc : (n, 13) — for EBM, NGBoost, CatBoost
             X_gpr  : (n, 10) — continuous features only, for GPR
         """
         cont_cols = self.meta['continuous_cols']
@@ -106,17 +114,17 @@ class TrainHypAI:
                         f"[{fmin:.2f},{fmax:.2f}] — result is an extrapolation"
                     )
 
-        # Rule 2: NGBoost uncertainty cao
+        # Rule 2: NGBoost uncertainty too high
         if sigma_ngb > self.meta['uncertainty_threshold']:
             warnings_list.append(
-                f"⚠️  Uncertainty cao (σ={sigma_ngb:.3f} > "
+                f"⚠️  High uncertainty (σ={sigma_ngb:.3f} > "
                 f"threshold {self.meta['uncertainty_threshold']:.3f})"
             )
 
-        # Rule 3: GPR OOD
+        # Rule 3: GPR out-of-distribution detection
         if sigma_gpr > self.meta.get('gpr_ood_threshold', 1.0):
             warnings_list.append(
-                f"⚠️  Input xa training distribution (GPR σ={sigma_gpr:.3f})"
+                f"⚠️  Input is outside the training distribution (GPR σ={sigma_gpr:.3f})"
             )
 
         # Rule 4: Volume bounds (based on training data range)
@@ -270,10 +278,10 @@ class TrainHypAI:
             }
 
         except Exception as e:
+            logger.error("Prediction error: %s\n%s", str(e), traceback.format_exc())
             return {
                 "status": 500,
-                "error":  str(e),
-                "trace":  traceback.format_exc(),
+                "error":  "An internal error occurred. Please check server logs.",
             }
 
 

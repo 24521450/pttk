@@ -13,10 +13,7 @@ interface State {
 const initialState: State = { hasError: false, error: null };
 
 export class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    (this as any).state = initialState;
-  }
+  state: State = initialState;
 
   static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error };
@@ -27,9 +24,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   render() {
-    const state = (this as any).state as State;
-
-    if (state.hasError) {
+    if (this.state.hasError) {
       return (
         <div className="min-h-screen bg-[#faf8ff] flex items-center justify-center p-8">
           <div className="bg-white rounded-[24px] p-10 shadow-[0_4px_40px_-4px_rgba(19,27,46,0.08)] border border-[#c2c6d6]/20 max-w-lg w-full text-center">
@@ -42,13 +37,13 @@ export class ErrorBoundary extends Component<Props, State> {
             <p className="text-[13px] text-[#424754] leading-relaxed mb-4">
               An unexpected error occurred. Please try again.
             </p>
-            {state.error && (
+            {this.state.error && (
               <pre className="text-[11px] bg-[#f2f3ff] text-[#424754] rounded-xl p-4 text-left overflow-auto mb-6 max-h-40 font-mono">
-                {state.error.message}
+                {this.state.error.message}
               </pre>
             )}
             <button
-              onClick={() => (this as any).setState(initialState)}
+              onClick={() => this.setState(initialState)}
               className="inline-flex items-center gap-2 bg-[#0058be] hover:bg-[#004395] text-white font-bold text-[13px] px-6 py-3 rounded-xl transition-colors shadow-[0_4px_12px_rgba(0,88,190,0.2)]"
             >
               <RefreshCw className="w-4 h-4" />
@@ -59,6 +54,6 @@ export class ErrorBoundary extends Component<Props, State> {
       );
     }
 
-    return (this as any).props.children;
+    return this.props.children;
   }
 }
