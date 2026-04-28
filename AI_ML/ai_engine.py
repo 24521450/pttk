@@ -282,7 +282,7 @@ class TrainHypAI:
             logger.error("Prediction error: %s\n%s", str(e), traceback.format_exc())
             return {
                 "status": 500,
-                "error":  "An internal error occurred. Please check server logs.",
+                "error":  f"Prediction failed: {type(e).__name__}: {str(e)}",
             }
 
 
