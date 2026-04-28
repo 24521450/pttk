@@ -134,7 +134,8 @@ export default function CaseStudy() {
       const raw: BackendResponse = await res.json();
       if (raw.status === 500) throw new Error("500");
       setResult(parseBackend(raw));
-    } catch {
+    } catch (err) {
+      console.error('[TrainHyp] CaseStudy predict failed:', err);
       setTimeout(() => setResult(buildFallback(testCase)), 500);
     } finally {
       setIsPredicting(false);

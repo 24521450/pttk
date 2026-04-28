@@ -331,7 +331,8 @@ export default function VolumeOptimizer() {
       if (raw.status === 500) throw new Error("Backend 500");
       setPredictionResult(parseBackendResponse(raw));
       setIsPredicting(false);
-    } catch {
+    } catch (err) {
+      console.error('[TrainHyp] Predict failed:', err);
       const cls = userProfile.sets_week_all >= 25 ? "High" : userProfile.sets_week_all >= 12 ? "Medium" : "Low";
       setTimeout(() => {
         setPredictionResult(buildFallback(cls, userProfile.sets_week_all));
@@ -349,8 +350,8 @@ export default function VolumeOptimizer() {
           setShapFeatures(data.feature_importance);
         }
       })
-      .catch(() => {
-        // Backend offline → keep SHAP_FALLBACK (already set as default)
+      .catch((err) => {
+        console.error('[TrainHyp] model-info fetch failed:', err);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
