@@ -1,25 +1,23 @@
 # TrainHyp AI Backend — Python Dependencies
 # STAT3013 | 2026
 #
-# Install:
-#   pip install -r requirements.txt
-#
-# Note: catboost, ngboost, and interpret may take several minutes to install
+# IMPORTANT: Versions are pinned to match the environment used to create
+# the .pkl model files. Changing versions may break model deserialization.
 
 # Web framework
 fastapi>=0.100.0
 uvicorn[standard]>=0.23.0
 
-# Data & ML core
-pandas>=2.0.0
-numpy>=1.24.0
-scikit-learn>=1.3.0
-joblib>=1.3.0
+# Data & ML core — PINNED for .pkl compatibility
+pandas==2.2.2
+numpy==2.2.6
+scikit-learn==1.7.2
+joblib==1.5.3
 
-# ML models
-catboost>=1.2
-ngboost>=0.4.0
-interpret>=0.4.0
+# ML models — PINNED for .pkl compatibility
+catboost==1.2.10
+ngboost==0.5.10
+interpret==0.7.8
 
 # Python types
 pydantic>=2.0.0
