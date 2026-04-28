@@ -8,16 +8,18 @@
 fastapi>=0.100.0
 uvicorn[standard]>=0.23.0
 
-# Data & ML core — PINNED for .pkl compatibility
-pandas==2.2.2
-numpy==2.2.6
-scikit-learn==1.7.2
-joblib==1.5.3
+# Data & ML core — minimum versions for .pkl compatibility
+# Exact versions relaxed so pip can find pre-built wheels for Python 3.13/3.14
+# ai_engine.py has a compatibility shim for sklearn version differences
+pandas>=2.2.2
+numpy>=2.1.0
+scikit-learn>=1.6.1
+joblib>=1.4.0
 
-# ML models — PINNED for .pkl compatibility
-catboost==1.2.10
-ngboost==0.5.10
-interpret==0.7.8
+# ML models
+catboost>=1.2.7
+ngboost>=0.5.1
+interpret>=0.6.0
 
 # Python types
 pydantic>=2.0.0

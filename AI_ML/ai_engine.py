@@ -39,6 +39,28 @@ warnings.filterwarnings('ignore', category=FutureWarning)
 warnings.filterwarnings('ignore', category=UserWarning, module='catboost')
 warnings.filterwarnings('ignore', category=UserWarning, module='ngboost')
 warnings.filterwarnings('ignore', message='.*ConvergenceWarning.*')
+try:
+    from sklearn.exceptions import InconsistentVersionWarning
+    warnings.filterwarnings('ignore', category=InconsistentVersionWarning)
+except ImportError:
+    pass  # older sklearn, no such warning
+
+# ── sklearn version compatibility shim ──────────────────────
+# Models were pickled with sklearn 1.6.1/1.7.2.
+# In sklearn ≥1.8, SimpleImputer._fill_dtype was renamed to _fit_dtype.
+# This patch ensures models load without error on any version.
+import sklearn.impute._base as _impute_base
+_OriginalSimpleImputer = _impute_base.SimpleImputer
+class _PatchedSimpleImputer(_OriginalSimpleImputer):
+    """Compatibility wrapper for cross-version sklearn deserialization."""
+    @property
+    def _fill_dtype(self):
+        return getattr(self, '_fit_dtype', None)
+    @_fill_dtype.setter
+    def _fill_dtype(self, value):
+        self._fit_dtype = value
+_impute_base.SimpleImputer = _PatchedSimpleImputer
+# ─────────────────────────────────────────────────────────────
 
 logger = logging.getLogger(__name__)
 
