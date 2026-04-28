@@ -168,7 +168,8 @@ class TrainHypAI:
             current_g = float(self.ebm_model.predict(X_proc)[0])
 
             # 4. Responder class (CatBoost Classifier)
-            class_idx  = int(self.clf_model.predict(X_proc)[0])
+            raw_pred   = self.clf_model.predict(X_proc)
+            class_idx  = int(np.asarray(raw_pred).flatten()[0])
             class_name = self.meta['class_mapping'][class_idx]
 
             # 5. Uncertainty (NGBoost)
